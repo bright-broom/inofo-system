@@ -7,6 +7,7 @@ IT担当が「ひとり」または「いない」中小企業向けの、月額
 > 変えていない書類が1文字でも変わったら、自動で検知する。
 
 <p>
+<a href="https://github.com/bright-broom/inofo-system/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/bright-broom/inofo-system/actions/workflows/ci.yml/badge.svg"></a>
 <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-111111?logo=nextdotjs">
 <img alt="React 19" src="https://img.shields.io/badge/React-19-3D38E0?logo=react&logoColor=white">
 <img alt="TypeScript strict" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white">
@@ -30,7 +31,8 @@ IT担当が「ひとり」または「いない」中小企業向けの、月額
 10. [品質・セキュリティ・アクセシビリティ](#品質セキュリティアクセシビリティ)
 11. [ディレクトリ構成](#ディレクトリ構成)
 12. [セットアップと日々の操作](#セットアップと日々の操作)
-13. [既知の制約と今後](#既知の制約と今後)
+13. [CI とリリース](#ci-とリリース)
+14. [既知の制約と今後](#既知の制約と今後)
 
 ---
 
@@ -45,6 +47,8 @@ IT担当が「ひとり」または「いない」中小企業向けの、月額
 | 書類のテンプレートを直したら、別の書類が壊れていた | 全書類の中身を正規化して保存し、変更前後を自動で比較する（`./build_all.sh --check`） |
 | スライドが手書き HTML で、同じ装飾が13枚に重複 | React コンポーネント化し、部品と色・書体を1か所で管理。手書き HTML はゼロ |
 | 契約書の条件と、サイト・見積書の条件がずれる | 契約書の別紙（プランの内容表）と料金表が同じデータ定義を共有する |
+| 料金の打ち間違いが、そのまま契約書やサイトに出る | `pricing.json` の入力チェックで、範囲の抜け・逆転・「上位ほど割安」との矛盾などを CI で止める |
+| 仮の値（ダミーのメールアドレスなど）のまま公開してしまう | 公開前チェック（`npm run release:check`）が、残っている仮の値をファイルと行番号付きで列挙する |
 
 ---
 
@@ -167,6 +171,17 @@ flowchart TB
     P --> M["手順書・マニュアル・FAQ<br/>対応時間"]
     P --> D["スライド<br/>プラン・比較表・時間・条件"]
 ```
+
+### 入力チェック
+
+`config/validate-pricing.mts` が、次のことを確かめます（CI で PR ごとに実行）。どれも、サイト・書類・スライドが前提にしていることで、崩れると表示が嘘になるか、生成が壊れます。
+
+- プランは `lite → standard → pro` の3つ（生成コードが id で参照しているため）
+- 金額・時間は正の整数。上位プランほど月額が高く、時間が多い
+- **上位プランほど1時間あたりが割安**（サイトと資料にそう書いているため）
+- 対象人数の範囲が途切れない（〜15名 → 15〜40名 → 40〜80名）
+- 「おすすめ」はちょうど1つ
+- 対応時間は `HH:MM` で、開始 < 終了。超過の計算単位は60を割り切れる分数
 
 表記の整形（`30000` → `30,000`、`[15, 40]` → `従業員 15〜40名` など）も共通部品（`lib_pricing.ts` / `pricing.py`）に閉じ込めています。そのため、同じ値が書類ごとに違う書き方で出ることもありません。
 
@@ -343,6 +358,10 @@ mindmap
     回帰
       全出力の正規化スナップショット
       料金変更の伝播テスト
+    CI
+      PR ごとに型・ビルド・生成を検証
+      料金定義の入力チェック
+      生成物の健全性チェック
     セキュリティヘッダー
       nosniff
       フレーム埋め込み禁止
@@ -371,8 +390,12 @@ mindmap
 
 ```
 .
+├── .github/workflows/ci.yml    CI（PR ごとにサイトと書類生成を検証）
 ├── config/
-│   └── pricing.json            料金・時間・条件の唯一の定義
+│   ├── pricing.json            料金・時間・条件の唯一の定義
+│   └── validate-pricing.mts    pricing.json の入力チェック
+├── scripts/
+│   └── release-check.mts       公開前チェック（仮の値の検出）
 ├── src/                        Webサイト（Next.js App Router）
 │   ├── content.ts              サイトの全文言とデータ（数値は pricing.json から）
 │   ├── app/                    ページ・OGP画像・sitemap・robots
@@ -390,7 +413,7 @@ mindmap
     │   ├── components.tsx      スライドの部品
     │   ├── slides/*.tsx        スライド13枚
     │   └── project/deck.json   並び順（公開先の設定）
-    ├── snapshot.py             回帰チェック（正規化スナップショット）
+    ├── snapshot.py             回帰チェック（--check）と生成物の健全性チェック（--verify）
     └── docx_text.ts            Word の本文抽出
 ```
 
@@ -402,7 +425,7 @@ mindmap
 
 ### 必要なもの
 
-- Node.js 22.18 以上（TypeScript をビルドなしで実行するため）
+- Node.js 22.18 以上（TypeScript をビルドなしで実行するため。`.nvmrc` と `engines` で指定）
 - Python 3（Excel の生成と検証）
 
 ### Webサイト
@@ -411,6 +434,9 @@ mindmap
 npm install
 npm run dev      # http://localhost:3000
 npm run build    # 本番ビルド
+npm run typecheck          # 型チェック
+npm run validate:pricing   # pricing.json の入力チェック
+npm run release:check      # 公開前チェック（仮の値が残っていれば一覧を出して失敗）
 ```
 
 公開前に、`src/content.ts` の仮の値（メールアドレス・運営者名）と、環境変数 `NEXT_PUBLIC_SITE_URL`（本番URL）を設定してください。
@@ -423,6 +449,7 @@ npm install
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ./build_all.sh           # 全書類とスライドを生成（out/ と deck/project/slides/）
 ./build_all.sh --check   # 生成して、変更前との差分を表示
+.venv/bin/python snapshot.py --verify   # 生成物がそろっていて壊れていないか（CI と同じ）
 npm run deck             # スライドだけ生成
 npm run typecheck        # 型チェック
 ```
@@ -431,7 +458,7 @@ npm run typecheck        # 型チェック
 
 ```mermaid
 flowchart LR
-    A["pricing.json を編集"] --> B["./build_all.sh --check"]
+    A["pricing.json を編集"] --> V["npm run validate:pricing"] --> B["./build_all.sh --check"]
     B --> C{"料金の載っていない<br/>書類に差分がある?"}
     C -->|ある| X["不具合。原因を調べる"]
     C -->|ない| D["npm run dev で<br/>サイトを確認"]
@@ -446,11 +473,45 @@ flowchart LR
 
 ---
 
+## CI とリリース
+
+### CI（GitHub Actions）
+
+PR ごと、`main` への push ごとに、サイトと書類生成を並列に検証します。
+
+```mermaid
+flowchart LR
+    PR["PR / main への push"] --> SITE & DOCS
+    subgraph SITE["site ジョブ"]
+        direction TB
+        S1["npm ci"] --> S2["pricing.json の入力チェック"] --> S3["型チェック"] --> S4["本番ビルド"]
+    end
+    subgraph DOCS["docs ジョブ"]
+        direction TB
+        D1["npm ci ・pip install"] --> D2["型チェック"] --> D3["全書類とスライドを生成"] --> D4["生成物の健全性チェック<br/>件数・数式エラー・空の本文・差し込み忘れ"]
+    end
+    SITE & DOCS --> OK["マージ可能"]
+```
+
+CI の中には「変更前」の生成物がないため、前後比較（`--check`）ではなく、生成物そのものの健全性（`--verify`）を確かめます。前後比較は、リファクタリングのときに手元で行います。
+
+### 公開前チェックリスト
+
+`npm run release:check` が、次の1〜3を機械的に確かめます。問題があれば、ファイル名と行番号付きで一覧を出して失敗します。
+
+1. 環境変数 `NEXT_PUBLIC_SITE_URL` に本番URL（`https://`）が設定されている
+2. `src/content.ts` などに、仮の値（`example.com`・仮の運営者名・未記入の〔　〕）が残っていない
+3. `pricing.json` の入力チェックが通る
+4. （手作業）契約書・プライバシーポリシー・インシデント対応手順書を専門家に確認してもらった
+5. （手作業）CI が通っていることを PR で確認した
+
+公開前チェックは CI では実行しません。仮の値が残っている間は必ず失敗するので、CI に入れるとすべての PR が止まってしまうためです。公開の直前に、手元で実行します。
+
 ## 既知の制約と今後
 
 | 項目 | 現状 | 次の一手 |
 |---|---|---|
-| CI | 未設定。型チェック・ビルド・回帰チェックは手元で実行している | GitHub Actions で `tsc`・`next build`・`./build_all.sh --check` を PR ごとに実行 |
+| Content-Security-Policy | 未設定（他のセキュリティヘッダーは設定済み） | Next.js が差し込むインラインスクリプトに合わせた CSP を、本番環境で表示を確かめながら追加 |
 | スライドの公開 | 生成後、変わったスライドを手で Artifact に公開する | 公開までを自動化 |
 | 書類生成の言語 | Word とスライドは TypeScript、Excel は Python（数式の再計算による検証に Python の `formulas` を使っているため） | Excel 生成も TypeScript に寄せ、ツールチェーンを1つにする |
-| 仮の値 | メールアドレス・運営者名・本番URLが仮 | 公開前に差し替え |
+| 仮の値 | メールアドレス・運営者名・本番URLが仮 | 公開前に差し替え（`npm run release:check` が残りを列挙する） |

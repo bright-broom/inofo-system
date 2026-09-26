@@ -1,0 +1,59 @@
+# PR ごと・main への push ごとに、サイトと書類生成の両方を検証する。
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    name: サイト（料金定義・型・本番ビルド）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: 料金定義（pricing.json）の入力チェック
+        run: npm run validate:pricing
+      - name: 型チェック
+        run: npm run typecheck
+      - name: 本番ビルド
+        run: npm run build
+
+  docs:
+    name: 書類・スライド（型・生成・健全性）
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: business-docs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: business-docs/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: business-docs/requirements.txt
+      - run: npm ci
+      - run: python -m venv .venv && .venv/bin/pip install -r requirements.txt
+      - name: 型チェック
+        run: npm run typecheck
+      - name: 全書類とスライドを生成
+        run: ./build_all.sh
+      - name: 生成物の健全性チェック
+        run: .venv/bin/python snapshot.py --verify

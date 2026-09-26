@@ -3,6 +3,7 @@
 使い方:
   .venv/bin/python snapshot.py <出力ファイル.json>
   .venv/bin/python snapshot.py --diff <前.json> <後.json>
+  .venv/bin/python snapshot.py --verify     … 生成物の健全性チェック（CI 用）
 
 - docx は本文テキスト（mammoth で抽出）
 - xlsx は全セルの「計算後の値」（formulas で再計算）
@@ -125,7 +126,36 @@ def diff(a: dict, b: dict) -> int:
     return problems
 
 
+EXPECTED = {"docx": 7, "xlsx": 5, "スライド": 13}
+
+
+def verify(snap: dict) -> int:
+    """生成物がそろっていて、壊れていないことを確かめる（前後比較ができない CI 用）。"""
+    problems = []
+    counts = {"docx": 0, "xlsx": 0, "スライド": 0}
+    for name, v in snap.items():
+        kind = "スライド" if name.startswith("スライド/") else name.rsplit(".", 1)[-1]
+        counts[kind] += 1
+        if kind == "docx" and len(v.strip()) < 200:
+            problems.append(f"{name}：本文がほとんど空です（{len(v.strip())}文字）")
+        if kind == "xlsx":
+            errs = [k for k, x in v.items() if x.startswith("#") and x.rstrip("!?").lstrip("#").isupper()]
+            if errs:
+                problems.append(f"{name}：数式エラー {len(errs)}件（{', '.join(errs[:3])}…）")
+        if kind == "スライド" and ("{{" in v or "undefined" in v or "NaN" in v):
+            problems.append(f"{name}：差し込み忘れ・未定義の値があります")
+    for kind, n in EXPECTED.items():
+        if counts[kind] != n:
+            problems.append(f"{kind} が {counts[kind]} 件です（{n} 件のはず）")
+    for p in problems:
+        print(f"  ✗ {p}")
+    print(f"生成物：Word {counts['docx']}・Excel {counts['xlsx']}・スライド {counts['スライド']} → " + ("問題なし" if not problems else f"{len(problems)}件の問題"))
+    return 1 if problems else 0
+
+
 if __name__ == "__main__":
+    if sys.argv[1] == "--verify":
+        sys.exit(verify(snapshot()))
     if sys.argv[1] == "--diff":
         a, b = (json.loads(Path(p).read_text(encoding="utf-8")) for p in sys.argv[2:4])
         sys.exit(1 if diff(a, b) else 0)
