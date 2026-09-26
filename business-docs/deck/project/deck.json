@@ -1,0 +1,19 @@
+{
+  "v": 4,
+  "createdOnFiles": { "v": 1, "at": "2026-09-26T05:12:00Z" },
+  "title": "ラクシス サービス説明資料",
+  "order": ["cover", "problem", "solution", "services", "reasons", "plans", "compare", "hours", "flow", "monthly", "terms", "faq", "contact"],
+  "sections": {
+    "intro": { "description": "表紙と、どんな会社のためのサービスか", "start": "cover" },
+    "why": { "description": "よくある悩みと、ラクシスが解決すること", "start": "problem" },
+    "what": { "description": "対応できる領域と、選ばれる理由", "start": "services" },
+    "price": { "description": "3つのプランと比較表", "start": "plans" },
+    "how": { "description": "対応時間、導入の流れ、毎月の進め方、契約条件", "start": "hours" },
+    "close": { "description": "よくある質問とお問い合わせ", "start": "faq" }
+  },
+  "faces": {
+    "dela-gothic-one": { "family": "Dela Gothic One", "href": "https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" },
+    "zen-maru-gothic": { "family": "Zen Maru Gothic", "href": "https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" }
+  },
+  "designSystems": []
+}

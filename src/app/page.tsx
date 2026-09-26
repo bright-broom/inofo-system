@@ -1,5 +1,5 @@
 import {
-  brand, siteUrl, siteDescription, hours, problems, plans, compareRows, planNotes, capacity, skills, steps, reasons, tips, message, excluded, faqs, sns, mailto,
+  brand, siteUrl, siteDescription, hours, minPriceMan, serviceHours, problems, plans, compareRows, planNotes, capacity, skills, steps, reasons, tips, message, excluded, faqs, sns, mailto,
 } from "@/content";
 import { Header } from "@/components/Header";
 import { FixedCta } from "@/components/FixedCta";
@@ -59,7 +59,7 @@ function Hero() {
             <span className="bg-white px-2 box-decoration-clone">相棒です！</span>
           </h1>
           <p className="mt-8 max-w-md text-sm leading-loose font-bold md:text-base">
-            プランは3つだけ。月額 3万円から。
+            プランは3つだけ。月額 {minPriceMan}万円から。
             <br />
             現役ITエンジニアが、担当を変えずに直接サポートします。
           </p>
@@ -570,10 +570,10 @@ function JsonLd() {
           {
             "@type": "OpeningHoursSpecification",
             dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-            opens: "19:00",
-            closes: "22:00",
+            opens: serviceHours.weekday.open,
+            closes: serviceHours.weekday.close,
           },
-          { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday", "Sunday"], opens: "10:00", closes: "18:00" },
+          { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday", "Sunday"], opens: serviceHours.holiday.open, closes: serviceHours.holiday.close },
         ],
         offers: plans.map((p) => ({
           "@type": "Offer",

@@ -1,10 +1,18 @@
 // サイト内の文言・データはすべてここに集約。ブランド差し替え時はこのファイルを編集する。
+// 料金・対応時間・条件の数値は config/pricing.json が唯一の定義（書類の生成スクリプトと共有）。
+import pricing from "../config/pricing.json";
+
+const yen = (n: number) => n.toLocaleString("en-US");
+const { weekday, holiday } = pricing.serviceHours;
+const minPrice = Math.min(...pricing.plans.map((p) => p.price));
+const byId = (id: string) => pricing.plans.find((p) => p.id === id)!;
+const target = ([min, max]: (number | null)[]) => `従業員 ${min ?? ""}〜${max}名`;
 
 // 本番URL。Vercel などでは環境変数 NEXT_PUBLIC_SITE_URL で上書きする
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com").replace(/\/$/, "");
 
 export const siteDescription =
-  "IT担当者が兼務・不在の小さな会社向け情シスサポート。月額3万円からの3プランで、現役ITエンジニアが担当を変えずに直接サポートします。";
+  `IT担当者が兼務・不在の小さな会社向け情シスサポート。月額${minPrice / 10000}万円からの3プランで、現役ITエンジニアが担当を変えずに直接サポートします。`;
 
 export const brand = {
   name: "ラクシス",
@@ -21,7 +29,7 @@ export const brand = {
 
 // 本業と並行して確実に守れる時間帯だけを約束する
 export const hours = {
-  label: "平日 19:00〜22:00／土日祝 10:00〜18:00",
+  label: `平日 ${weekday.open}〜${weekday.close}／土日祝 ${holiday.open}〜${holiday.close}`,
   short: "平日夜・土日祝",
   note: "メールは24時間受け付けています。平日の日中は、返信のみ随時行います。",
 };
@@ -69,21 +77,21 @@ export const plans: Plan[] = [
     rank: "梅",
     name: "ライト",
     catch: "困ったときに、すぐ聞ける",
-    target: "従業員 〜15名",
-    price: "30,000",
-    hours: "月5時間まで",
-    features: ["メール・チャットのITヘルプデスク", "アカウント発行・停止", "PCセットアップ（月1台まで）"],
+    target: target(byId("lite").employees),
+    price: yen(byId("lite").price),
+    hours: `月${byId("lite").hours}時間まで`,
+    features: ["メール・チャットのITヘルプデスク", "アカウント発行・停止", `PCセットアップ（月${byId("lite").pcSetupPerMonth}台まで）`],
   },
   {
     id: "standard",
     rank: "竹",
     name: "スタンダード",
     catch: "IT担当を、まるごと任せる",
-    target: "従業員 15〜40名",
-    price: "60,000",
-    hours: "月12時間まで",
+    target: target(byId("standard").employees),
+    price: yen(byId("standard").price),
+    hours: `月${byId("standard").hours}時間まで`,
     base: "ライトの全内容",
-    features: ["M365 / Google Workspace の運用", "多要素認証・端末管理などの基本対策", "月1回のオンライン定例"],
+    features: ["M365 / Google Workspace の運用", "多要素認証・端末管理などの基本対策", `月${byId("standard").meetingsPerMonth}回のオンライン定例`],
     recommended: true,
   },
   {
@@ -91,9 +99,9 @@ export const plans: Plan[] = [
     rank: "松",
     name: "プロ",
     catch: "ITの方針から、いっしょに考える",
-    target: "従業員 40〜80名",
-    price: "100,000",
-    hours: "月20時間まで",
+    target: target(byId("pro").employees),
+    price: yen(byId("pro").price),
+    hours: `月${byId("pro").hours}時間まで`,
     base: "スタンダードの全内容",
     features: ["IT顧問（方針・ベンダー選定の相談）", "年間ITロードマップの作成", "業務自動化・SaaS連携の構築"],
   },
@@ -101,15 +109,15 @@ export const plans: Plan[] = [
 
 // 比較表。true = 含む / false = 含まない / 文字列 = 内容
 export const compareRows: { label: string; values: (string | boolean)[] }[] = [
-  { label: "月の対応時間", values: ["5時間", "12時間", "20時間"] },
-  { label: "返信の目安（対応時間内）", values: ["翌日中", "当日中", "4時間以内"] },
+  { label: "月の対応時間", values: pricing.plans.map((p) => `${p.hours}時間`) },
+  { label: "返信の目安（対応時間内）", values: pricing.plans.map((p) => p.reply) },
   { label: "ヘルプデスク", values: [true, true, true] },
   { label: "アカウント管理", values: [true, true, true] },
-  { label: "PCセットアップ", values: ["月1台", "月3台", "月5台"] },
+  { label: "PCセットアップ", values: pricing.plans.map((p) => `月${p.pcSetupPerMonth}台`) },
   { label: "IT資産台帳の管理", values: [false, true, true] },
   { label: "クラウド(M365/GWS)運用", values: [false, true, true] },
   { label: "セキュリティ基本対策", values: [false, true, true] },
-  { label: "オンライン定例", values: [false, "月1回", "月2回"] },
+  { label: "オンライン定例", values: pricing.plans.map((p) => (p.meetingsPerMonth ? `月${p.meetingsPerMonth}回` : false)) },
   { label: "IT顧問・ロードマップ", values: [false, false, true] },
   { label: "業務自動化・SaaS連携", values: [false, false, true] },
   { label: "優先対応", values: [false, false, true] },
@@ -117,13 +125,17 @@ export const compareRows: { label: string; values: (string | boolean)[] }[] = [
 
 export const planNotes = [
   "表示価格はすべて税別・月額です。",
-  "対応時間を超えた分は 5,000円/時間 で承ります。",
+  `対応時間を超えた分は ${yen(pricing.overage.ratePerHour)}円/時間 で承ります。`,
   "サポートは原則リモートです。訪問が必要な場合は東京23区内に限り別途お見積りします。",
   "即時の駆けつけ・24時間監視には対応していません。",
 ];
 
 // 品質を保つための同時受け入れ上限
-export const capacity = 4;
+export const capacity = pricing.capacity;
+
+// 構造化データ・見出しで使う数値
+export const minPriceMan = minPrice / 10000;
+export const serviceHours = pricing.serviceHours;
 
 export const skills = ["PCセットアップ", "ヘルプデスク", "クラウド運用", "ネットワーク", "セキュリティ", "業務自動化"];
 
@@ -194,7 +206,7 @@ export const excluded = [
 export const faqs = [
   { q: "どのプランを選べばいいか分かりません。", a: "迷ったらスタンダードがおすすめです。無料相談で現状を伺い、最適なプランをご提案します。契約後のプラン変更も翌月から可能です。" },
   { q: "ひとりで運営していて、不在のときは大丈夫ですか？", a: "対応時間と返信の目安は事前にお約束し、休暇などの不在予定は前もってお知らせします。即時の駆けつけや24時間監視は行っていないため、必要な場合は専門業者との併用をご提案します。" },
-  { q: "月の対応時間を使い切ったらどうなりますか？", a: "超過分は 5,000円/時間 で対応します。超過が続く場合は、上位プランの方が割安になるケースが多いのでご案内します。" },
+  { q: "月の対応時間を使い切ったらどうなりますか？", a: `超過分は ${yen(pricing.overage.ratePerHour)}円/時間 で対応します。超過が続く場合は、上位プランの方が割安になるケースが多いのでご案内します。` },
   { q: "月額料金にツールの利用料は含まれますか？", a: "含まれません。各種SaaSやソフトウェアの利用料はお客様のご負担です。選定や契約手続きのサポートは可能です。" },
   { q: "最低契約期間や解約の条件は？", a: "最低契約期間は1ヶ月、以降は1ヶ月ごとの自動更新です。解約は満了の1ヶ月前までにお申し出ください。" },
   { q: "訪問(オンサイト)対応は可能ですか？", a: "サポートは原則リモートです。訪問が必要な場合は、東京23区内に限り別途お見積りのうえ対応します。" },

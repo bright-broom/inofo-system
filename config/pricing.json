@@ -1,0 +1,16 @@
+{
+  "_readme": "料金・対応時間・条件の唯一の定義。サイト（src/content.ts）と business-docs の全生成スクリプトがここを読む。変更したら business-docs で ./build_all.sh を実行し、スライド（business-docs/deck）は手で合わせる。",
+  "currency": "JPY",
+  "taxIncluded": false,
+  "overage": { "ratePerHour": 5000, "unitMinutes": 15 },
+  "capacity": 4,
+  "serviceHours": {
+    "weekday": { "open": "19:00", "close": "22:00" },
+    "holiday": { "open": "10:00", "close": "18:00" }
+  },
+  "plans": [
+    { "id": "lite", "rank": "梅", "name": "ライト", "price": 30000, "hours": 5, "employees": [null, 15], "reply": "翌日中", "pcSetupPerMonth": 1, "meetingsPerMonth": 0 },
+    { "id": "standard", "rank": "竹", "name": "スタンダード", "price": 60000, "hours": 12, "employees": [15, 40], "reply": "当日中", "pcSetupPerMonth": 3, "meetingsPerMonth": 1, "recommended": true },
+    { "id": "pro", "rank": "松", "name": "プロ", "price": 100000, "hours": 20, "employees": [40, 80], "reply": "4時間以内", "pcSetupPerMonth": 5, "meetingsPerMonth": 2 }
+  ]
+}

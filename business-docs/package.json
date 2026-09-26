@@ -1,0 +1,14 @@
+{
+  "name": "rakusys-business-docs",
+  "description": "ラクシスの営業・契約・運用書類の生成スクリプト（料金は ../config/pricing.json）",
+  "scripts": {
+    "build": "./build_all.sh",
+    "check": "./build_all.sh --check"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "docx": "^9.7.2",
+    "mammoth": "^1.12.3"
+  },
+  "private": true
+}

@@ -5,3 +5,9 @@ next-env.d.ts
 .claude
 .env*
 *.tsbuildinfo
+
+# business-docs（書類の生成スクリプト）
+business-docs/.venv
+business-docs/out
+.DS_Store
+__pycache__
