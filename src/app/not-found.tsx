@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Mascot } from "@/components/Mascot";
+
+export const metadata: Metadata = {
+  title: "ページが見つかりません",
+  robots: { index: false },
+};
 
 export default function NotFound() {
   return (
