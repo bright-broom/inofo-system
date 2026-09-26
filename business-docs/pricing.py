@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 
 PRICING = json.loads((Path(__file__).parent.parent / "config" / "pricing.json").read_text(encoding="utf-8"))
+# 事業者の連絡先（config/business.json が唯一の定義）
+CONTACT_EMAIL = json.loads((Path(__file__).parent.parent / "config" / "business.json").read_text(encoding="utf-8"))["email"]
 PLANS = PRICING["plans"]
 OVERAGE = PRICING["overage"]["ratePerHour"]
 _w, _h = PRICING["serviceHours"]["weekday"], PRICING["serviceHours"]["holiday"]

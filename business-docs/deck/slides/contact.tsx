@@ -1,6 +1,6 @@
 import { Eyebrow, Slide } from "../components.tsx";
 import { BODY_FONT, C, column, head, row } from "../theme.ts";
-import { HOURS } from "../../lib_pricing.ts";
+import { CONTACT_EMAIL, HOURS } from "../../lib_pricing.ts";
 
 export default function Contact() {
   return (
@@ -21,7 +21,7 @@ export default function Contact() {
         <x-icon name="PaperPlane" style={{ color: C.indigo, width: "64px", height: "64px" }}></x-icon>
         <div style={column("8px")}>
           <p style={{ fontSize: "26px", fontWeight: 700, color: C.muted }}>お問い合わせ（メール）</p>
-          <p style={{ ...head, fontSize: "56px" }}>hello@example.com</p>
+          <p style={{ ...head, fontSize: "56px" }}>{CONTACT_EMAIL}</p>
         </div>
       </div>
       <p style={{ position: "absolute", left: "128px", bottom: "72px", width: "1300px", fontSize: "26px", fontWeight: 700 }}>{`ラクシス　運営：〔氏名〕（個人事業）　｜　対応時間：${HOURS}`}</p>

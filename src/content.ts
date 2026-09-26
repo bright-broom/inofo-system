@@ -1,6 +1,7 @@
 // サイト内の文言・データはすべてここに集約。ブランド差し替え時はこのファイルを編集する。
 // 料金・対応時間・条件の数値は config/pricing.json が唯一の定義（書類の生成スクリプトと共有）。
 import pricing from "../config/pricing.json";
+import business from "../config/business.json";
 
 const yen = (n: number) => n.toLocaleString("en-US");
 const { weekday, holiday } = pricing.serviceHours;
@@ -23,8 +24,7 @@ export const brand = {
   operator: "山田 太郎",
   area: "東京都",
   url: "https://example.com/",
-  // 仮置きのダミー。本番前に差し替える
-  email: "hello@example.com",
+  email: business.email, // config/business.json が唯一の定義
 };
 
 // 本業と並行して確実に守れる時間帯だけを約束する

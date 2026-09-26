@@ -1,5 +1,9 @@
 // config/pricing.json（料金・時間の唯一の定義）を読み、書類で使う表記に整える。
 import pricingJson from "../config/pricing.json" with { type: "json" };
+import business from "../config/business.json" with { type: "json" };
+
+// 事業者の連絡先（config/business.json が唯一の定義）
+export const CONTACT_EMAIL: string = business.email;
 
 export type Plan = {
   id: string;
