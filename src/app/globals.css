@@ -35,3 +35,6 @@ body { background: #fff; color: var(--color-ink); -webkit-font-smoothing: antial
 details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 details[open] .faq-icon { transform: rotate(45deg); }
+
+/* キーボード操作時のフォーカス表示 */
+:focus-visible { outline: 3px solid var(--color-indigo); outline-offset: 3px; border-radius: 6px; }

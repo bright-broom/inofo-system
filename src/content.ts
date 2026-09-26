@@ -1,5 +1,11 @@
 // サイト内の文言・データはすべてここに集約。ブランド差し替え時はこのファイルを編集する。
 
+// 本番URL。Vercel などでは環境変数 NEXT_PUBLIC_SITE_URL で上書きする
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com").replace(/\/$/, "");
+
+export const siteDescription =
+  "IT担当者が兼務・不在の中小企業向け情シスアウトソーシング。月額5万円からの3プランで、毎日8:00〜21:00・土日も専門チームが対応します。";
+
 export const brand = {
   name: "ラクシス",
   roman: "raku-sys",
@@ -19,11 +25,11 @@ export const hours = {
 };
 
 export const nav = [
-  { href: "#problem", label: "よくある悩み" },
-  { href: "#plans", label: "プラン" },
-  { href: "#reason", label: "選ばれる理由" },
-  { href: "#flow", label: "導入の流れ" },
-  { href: "#faq", label: "FAQ" },
+  { href: "/#problem", label: "よくある悩み" },
+  { href: "/#plans", label: "プラン" },
+  { href: "/#reason", label: "選ばれる理由" },
+  { href: "/#flow", label: "導入の流れ" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 export const problems = [
@@ -187,11 +193,27 @@ export const faqs = [
   { q: "訪問(オンサイト)対応は可能ですか？", a: "可能です。対応エリアや頻度に応じて別途お見積りいたします。" },
 ];
 
-export const sns = [
-  { name: "Instagram", href: "#" },
-  { name: "YouTube", href: "#" },
-  { name: "TikTok", href: "#" },
+// URL が空のものは表示しない。アカウント開設後に URL を入れる
+export const sns: { name: string; href: string }[] = [
+  { name: "Instagram", href: "" },
+  { name: "YouTube", href: "" },
+  { name: "TikTok", href: "" },
 ];
+
+export const legal = {
+  // 規程の制定日・最終改定日
+  privacyUpdated: "2026年9月26日",
+  company: [
+    { label: "会社名", value: "サンプルテック株式会社" },
+    { label: "代表者", value: "代表取締役 山田 太郎" },
+    { label: "所在地", value: "〒100-0000 東京都千代田区サンプル町1-2-3 サンプルビル5F" },
+    { label: "設立", value: "20XX年X月" },
+    { label: "資本金", value: "X,XXX万円" },
+    { label: "従業員数", value: "XX名（うちエンジニア XX名）" },
+    { label: "事業内容", value: "情報システム部門の運用支援・アウトソーシング／ITコンサルティング／システム開発" },
+    { label: "お問い合わせ", value: brand.email },
+  ],
+};
 
 // 件名・本文テンプレ入りの mailto。プラン名を渡すと件名に入る
 export function mailto(plan?: string) {

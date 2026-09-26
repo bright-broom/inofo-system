@@ -1,12 +1,12 @@
 import {
-  brand, hours, problems, plans, compareRows, planNotes, experts, steps, reasons, tips, message, excluded, faqs, sns, mailto,
+  brand, siteUrl, siteDescription, hours, problems, plans, compareRows, planNotes, experts, steps, reasons, tips, message, excluded, faqs, sns, mailto,
 } from "@/content";
 import { Header } from "@/components/Header";
 import { FixedCta } from "@/components/FixedCta";
 import { CtaBlock } from "@/components/CtaBlock";
 import { CopyEmail } from "@/components/CopyEmail";
 import { Mascot } from "@/components/Mascot";
-import { Logo } from "@/components/Logo";
+import { Footer } from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
 import { SectionTitle } from "@/components/SectionTitle";
 
@@ -16,7 +16,8 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main id="top" className="overflow-x-clip">
+      <main id="main" className="overflow-x-clip">
+        <JsonLd />
         <Hero />
         <Problems />
         <Plans />
@@ -480,12 +481,14 @@ function Terms() {
 
 /* ---------------- SNS ---------------- */
 function Sns() {
+  const links = sns.filter((s) => s.href);
+  if (!links.length) return null;
   return (
     <section className="pb-16">
       <div className="mx-auto max-w-3xl px-4 text-center">
         <p className="font-black">各種SNSでも情報発信中！</p>
         <div className="mt-4 flex justify-center gap-3">
-          {sns.map((s) => (
+          {links.map((s) => (
             <a key={s.name} href={s.href} className="rounded-full border-2 border-ink px-5 py-2 text-sm font-bold transition hover:bg-ink hover:text-white">{s.name}</a>
           ))}
         </div>
@@ -538,24 +541,46 @@ function Contact() {
   );
 }
 
-/* ---------------- Footer ---------------- */
-function Footer() {
-  return (
-    <footer className="bg-ink pt-14 pb-28 text-white md:pb-14">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <Logo className="[&>span:last-child]:text-white" />
-          <p className="mt-4 text-sm opacity-80">{brand.company}</p>
-          <p className="text-xs opacity-60">{brand.zip} {brand.address}</p>
-          <p className="text-xs opacity-60">MAIL {brand.email}</p>
-        </div>
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs opacity-80">
-          <a href="#" className="hover:underline">プライバシーポリシー</a>
-          <a href="#" className="hover:underline">運営会社</a>
-          <a href="#contact" className="hover:underline">お問い合わせ</a>
-        </div>
-      </div>
-      <p className="mt-10 text-center text-[11px] opacity-50">© {new Date().getFullYear()} {brand.company}</p>
-    </footer>
-  );
+/* ---------------- 構造化データ ---------------- */
+function JsonLd() {
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteUrl}/#org`,
+        name: brand.company,
+        url: siteUrl,
+        email: brand.email,
+        telephone: brand.tel,
+        address: { "@type": "PostalAddress", addressCountry: "JP", streetAddress: `${brand.zip} ${brand.address}` },
+      },
+      {
+        "@type": "Service",
+        name: `${brand.name}（情シスアウトソーシング）`,
+        description: siteDescription,
+        provider: { "@id": `${siteUrl}/#org` },
+        areaServed: "JP",
+        hoursAvailable: {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          opens: "08:00",
+          closes: "21:00",
+        },
+        offers: plans.map((p) => ({
+          "@type": "Offer",
+          name: `${p.name}プラン`,
+          description: `${p.target}向け。${p.hours}。`,
+          price: p.price.replace(/,/g, ""),
+          priceCurrency: "JPY",
+          url: `${siteUrl}/#plans`,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+      },
+    ],
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />;
 }
