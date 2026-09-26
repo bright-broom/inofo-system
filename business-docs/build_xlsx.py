@@ -9,7 +9,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 
-from pricing import OVERAGE, PLANS, RECOMMENDED
+from pricing import CONTACT_EMAIL, OVERAGE, PLANS, RECOMMENDED
 
 FONT = "游ゴシック"
 INPUT_FILL = PatternFill("solid", fgColor="FFF59D")
@@ -84,7 +84,7 @@ def build_settings(wb):
         ("屋号", "ラクシス"),
         ("氏名", "〔氏名〕"),
         ("住所", "〔〒000-0000 東京都〇〇区〇〇 1-2-3〕"),
-        ("メール", "hello@example.com"),
+        ("メール", CONTACT_EMAIL),
         ("登録番号（インボイス）", "T0000000000000"),
         ("振込先", "〔〇〇銀行 〇〇支店 普通 0000000 〔口座名義カナ〕〕"),
     ]

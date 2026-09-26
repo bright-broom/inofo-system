@@ -422,7 +422,6 @@ function Message() {
           <p className="mt-6 text-sm font-bold">{brand.name}</p>
           <p className="text-sm">{message.role}</p>
           <p className="mt-1 text-2xl font-black">{message.name}</p>
-          <p className="font-display text-xs tracking-widest text-neutral-600">{message.roman}</p>
         </Reveal>
         <Reveal className="rounded-[2rem] border-[3px] border-ink bg-white p-6 md:p-12">
           <p className="sec-title text-2xl md:text-3xl">{message.heading}</p>

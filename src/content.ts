@@ -1,6 +1,7 @@
 // サイト内の文言・データはすべてここに集約。ブランド差し替え時はこのファイルを編集する。
 // 料金・対応時間・条件の数値は config/pricing.json が唯一の定義（書類の生成スクリプトと共有）。
 import pricing from "../config/pricing.json";
+import business from "../config/business.json";
 
 const yen = (n: number) => n.toLocaleString("en-US");
 const { weekday, holiday } = pricing.serviceHours;
@@ -20,11 +21,9 @@ export const brand = {
   tagline: "まるっと頼れる情シス窓口",
   // 個人事業として運営。屋号と運営者名を分けて持つ
   company: "ラクシス",
-  operator: "山田 太郎",
+  operator: business.operator, // config/business.json が唯一の定義
   area: "東京都",
-  url: "https://example.com/",
-  // 仮置きのダミー。本番前に差し替える
-  email: "hello@example.com",
+  email: business.email, // config/business.json が唯一の定義
 };
 
 // 本業と並行して確実に守れる時間帯だけを約束する
@@ -183,11 +182,10 @@ export const tips = [
 
 export const message = {
   heading: "続けられるITを、いっしょに。",
-  name: "山田 太郎",
-  roman: "Taro Yamada",
+  name: business.operator,
   role: "運営者",
   body: [
-    "はじめまして。ラクシスを運営している山田です。現役のITエンジニアとして働きながら、小さな会社のIT担当をお引き受けしています。",
+    `はじめまして。ラクシスを運営している${business.operator}です。現役のITエンジニアとして働きながら、小さな会社のIT担当をお引き受けしています。`,
     "小さな会社のIT現場で起きている困りごとの多くは、「技術」ではなく「運用」の問題です。ツールを入れても使われない、設定した人が辞めたら誰も分からない——そんな状況をなくしたいと考えています。",
     "ひとりで運営しているからこそ、窓口と作業者が同じで、担当が変わることもありません。専門用語ではなく皆さんの業務の言葉でお話しし、一緒に優先順位を決めて、一歩ずつ整えていきます。",
     "品質を保つため、同時にお受けできる会社数には上限を設けています。まずはお気軽にご相談ください。",
