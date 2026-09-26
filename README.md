@@ -18,16 +18,21 @@
     ├── pricing.py        pricing.json を読む部品（Python）
     ├── lib_docx.js       Word の共通デザイン
     ├── snapshot.py       書類の中身が変わっていないかの確認ツール
-    └── deck/             サービス説明資料（スライド）の元データ
+    ├── build_deck.js     スライドを作り直す（テンプレートに料金を差し込む）
+    └── deck/
+        ├── templates/    スライドのテンプレート（文言・デザインはここを直す）
+        └── project/      生成されたスライド（Artifact に公開するもの）
 ```
 
 ## 料金や対応時間を変えるとき
 
 1. `config/pricing.json` を直す（プランの金額・時間・返信の目安・PCセットアップ台数・定例の回数・対象人数、超過単価、受け入れ社数、対応時間）
-2. 書類を作り直す：`cd business-docs && ./build_all.sh --check`
-   - 変わった書類が「差分」として表示されます。料金が載っていない書類に差分が出たら不具合です。
+2. 書類とスライドを作り直す：`cd business-docs && ./build_all.sh --check`
+   - 変わった書類・スライドが「差分」として表示されます。料金が載っていないものに差分が出たら不具合です。
 3. サイトを確認する：`npm run dev`
-4. **スライドだけは手で直す**（`business-docs/deck/project/slides/plans.html`・`compare.html`・`hours.html`・`terms.html`）。スライドは Claude の Artifact として公開しているため、生成スクリプトの対象外です。
+4. **スライドを公開し直す**：`build_deck.js` が「Artifact への公開が必要」と表示したスライドを、[サービス説明資料](https://claude.ai/artifact/J4tLwpUKXKDt2kuDRHJN59)に公開し直します（Claude に「更新されたスライドを公開して」と頼めば行えます）。
+
+スライドの文言やデザインを変えるときは、`deck/project/slides/` ではなく `deck/templates/` を直してください。`deck/project/slides/` は生成物なので、作り直すと上書きされます。料金や時間は `{{standard.price}}` のような差し込み記号で書きます（使える記号は `build_deck.js` の `values` を参照）。
 
 ## サイト
 
@@ -52,6 +57,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 | 段階 | 書類 | 形式 | スクリプト |
 |---|---|---|---|
+| 集客・営業 | サービス説明資料（スライド） | HTML（Artifact） | `build_deck.js` |
 | 集客・営業 | 料金表 | Word | `build_pricelist.js` |
 | 相談・提案 | ヒアリングシート | Excel | `build_hearing.py` |
 | 相談・提案 | 提案書 | Word | `build_proposal.js` |

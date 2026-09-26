@@ -6,6 +6,7 @@
 
 - docx は本文テキスト（mammoth で抽出）
 - xlsx は全セルの「計算後の値」（formulas で再計算）
+- スライドは HTML をそのまま
 を記録する。リファクタで見た目・金額が変わっていないことの確認に使う。
 TODAY() を使うセル（期限の「注意」列）は日付が変わると値が変わるため、同じ日に比較すること。
 """
@@ -50,6 +51,8 @@ def snapshot() -> dict:
         snap[f.name] = docx_text(f)
     for f in sorted(OUT.glob("*.xlsx")):
         snap[f.name] = xlsx_values(f)
+    for f in sorted((Path(__file__).parent / "deck/project/slides").glob("*.html")):
+        snap[f"スライド/{f.name}"] = f.read_text(encoding="utf-8")
     return snap
 
 
