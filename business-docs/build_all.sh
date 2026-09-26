@@ -6,9 +6,10 @@ set -e
 cd "$(dirname "$0")"
 PY=.venv/bin/python
 if [ "$1" = "--check" ]; then $PY snapshot.py "${TMPDIR:-/tmp}/rakusys_before.json" >/dev/null 2>&1; fi
-for s in build_contracts.ts build_proposal.ts build_incident.ts build_manual.ts build_faq.ts build_pricelist.ts build_deck.ts; do
+for s in build_contracts.ts build_proposal.ts build_incident.ts build_manual.ts build_faq.ts build_pricelist.ts; do
   node "$s"
 done
+node --import tsx build_deck.tsx  # スライドは React（TSX）なので tsx を読み込んで実行
 for s in build_xlsx.py build_report.py build_hearing.py build_onboarding.py build_offboarding.py; do
   $PY "$s"
 done

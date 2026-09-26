@@ -12,7 +12,15 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "jsx": "react-jsx"
   },
-  "include": ["*.ts"]
+  "include": [
+    "*.ts",
+    "*.tsx",
+    "deck/**/*.ts",
+    "deck/**/*.tsx"
+  ]
 }

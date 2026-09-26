@@ -6,12 +6,14 @@
 
 - docx は本文テキスト（mammoth で抽出）
 - xlsx は全セルの「計算後の値」（formulas で再計算）
-- スライドは HTML をそのまま
+- スライドは HTML の構造（タグ・属性・style の各宣言・文字）を正規化したもの。書き方の違い（属性の引用符、<br> と <br/>、
+  タグ間の改行、style 宣言の順番や重複）は同じとみなす
 を記録する。リファクタで見た目・金額が変わっていないことの確認に使う。
 TODAY() を使うセル（期限の「注意」列）は日付が変わると値が変わるため、同じ日に比較すること。
 """
 import json
 import subprocess
+from html.parser import HTMLParser
 import sys
 from pathlib import Path
 
@@ -45,6 +47,50 @@ def xlsx_values(path: Path) -> dict:
     return dict(sorted(vals.items()))
 
 
+class _Tree(HTMLParser):
+    """HTML を比較用の正規化トークン列にする。"""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.out = []
+
+    def _attrs(self, attrs):
+        d = {}
+        for k, v in attrs:
+            if k == "style":
+                decls = {}
+                for part in (v or "").split(";"):
+                    if ":" in part:
+                        prop, val = part.split(":", 1)
+                        decls[prop.strip().lower()] = val.strip()  # 同じ指定の重複は後勝ち（ブラウザと同じ）
+                v = dict(sorted(decls.items()))  # 宣言の順番の違いは同じとみなす
+            d[k] = v
+        return dict(sorted(d.items()))
+
+    def handle_starttag(self, tag, attrs):
+        self.out.append(["<", tag, self._attrs(attrs)])
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        if tag != "br":
+            self.handle_endtag(tag)
+
+    def handle_endtag(self, tag):
+        if tag != "br":
+            self.out.append([">", tag])
+
+    def handle_data(self, data):
+        text = data.strip(" \t\r\n")  # 全角スペースは文字として残す
+        if text:
+            self.out.append(["text", text])
+
+
+def slide_tree(html: str) -> str:
+    t = _Tree()
+    t.feed(html)
+    return json.dumps(t.out, ensure_ascii=False)
+
+
 def snapshot() -> dict:
     snap = {}
     for f in sorted(OUT.glob("*.docx")):
@@ -52,7 +98,7 @@ def snapshot() -> dict:
     for f in sorted(OUT.glob("*.xlsx")):
         snap[f.name] = xlsx_values(f)
     for f in sorted((Path(__file__).parent / "deck/project/slides").glob("*.html")):
-        snap[f"スライド/{f.name}"] = f.read_text(encoding="utf-8")
+        snap[f"スライド/{f.name}"] = slide_tree(f.read_text(encoding="utf-8"))
     return snap
 
 

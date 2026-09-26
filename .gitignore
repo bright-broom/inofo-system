@@ -9,5 +9,6 @@ next-env.d.ts
 # business-docs（書類の生成スクリプト）
 business-docs/.venv
 business-docs/out
+business-docs/deck/project/slides
 .DS_Store
 __pycache__
