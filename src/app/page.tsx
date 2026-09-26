@@ -1,13 +1,12 @@
 import {
-  brand, problems, services, phases, experts, workload, steps, reasons, tips, message, terms, domains, crossDomains, faqs, sns,
+  brand, hours, problems, plans, compareRows, planNotes, experts, steps, reasons, tips, message, excluded, faqs, sns, mailto,
 } from "@/content";
 import { Header } from "@/components/Header";
 import { FixedCta } from "@/components/FixedCta";
 import { CtaBlock } from "@/components/CtaBlock";
-import { ContactForm } from "@/components/ContactForm";
+import { CopyEmail } from "@/components/CopyEmail";
 import { Mascot } from "@/components/Mascot";
 import { Logo } from "@/components/Logo";
-import { Icon } from "@/components/Icon";
 import { Reveal } from "@/components/Reveal";
 import { SectionTitle } from "@/components/SectionTitle";
 
@@ -20,18 +19,15 @@ export default function Home() {
       <main id="top" className="overflow-x-clip">
         <Hero />
         <Problems />
-        <Services />
-        <Pricing />
-        <Team />
-        <CtaBlock />
-        <Flow />
+        <Plans />
         <Reasons />
+        <Team />
+        <Flow />
         <CtaBlock />
         <Tips />
         <Message />
-        <Terms />
-        <Domains />
         <Faq />
+        <Terms />
         <Sns />
         <Contact />
       </main>
@@ -62,13 +58,13 @@ function Hero() {
             <span className="bg-white px-2 box-decoration-clone">チームです！</span>
           </h1>
           <p className="mt-8 max-w-md text-sm leading-loose font-bold md:text-base">
-            ヘルプデスクからセキュリティ、IT戦略まで。
+            プランは3つだけ。月額 5万円から、
             <br />
-            必要なときに、必要な専門家が、月額でチームに加わります。
+            毎日 8:00〜21:00、土日も専門チームが対応します。
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#contact" className="rounded-full bg-ink px-8 py-4 font-bold text-white shadow-[4px_4px_0_#fff] transition hover:-translate-y-0.5 hover:bg-indigo">資料請求はこちら →</a>
-            <a href="#price" className="rounded-full border-[2.5px] border-ink bg-white px-8 py-4 font-bold transition hover:-translate-y-0.5">料金を見る</a>
+            <a href="#plans" className="rounded-full bg-ink px-8 py-4 font-bold text-white shadow-[4px_4px_0_#fff] transition hover:-translate-y-0.5 hover:bg-indigo">3つのプランを見る →</a>
+            <a href={mailto()} className="rounded-full border-[2.5px] border-ink bg-white px-8 py-4 font-bold transition hover:-translate-y-0.5">メールで無料相談</a>
           </div>
         </div>
         <HeroVisual />
@@ -105,7 +101,7 @@ function HeroVisual() {
           ))}
         </div>
         <ul className="mt-4 grid gap-2 text-xs font-bold">
-          {["新入社員3名のPCセットアップ完了", "多要素認証を全社展開", "複合機のスキャン設定を修正"].map((t) => (
+          {["新入社員3名のPCセットアップ完了", "多要素認証を全社展開", "土曜朝のVPN障害を30分で復旧"].map((t) => (
             <li key={t} className="flex items-center gap-2 rounded-xl border-2 border-ink/10 px-3 py-2">
               <span className="grid size-5 place-items-center rounded-full bg-ink text-[10px] text-white">✓</span>
               {t}
@@ -128,9 +124,9 @@ function Problems() {
           <br className="md:hidden" />
           ありませんか？
         </SectionTitle>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3">
           {problems.map((p, i) => (
-            <Reveal key={i} delay={(i % 3) * 100} className="h-full">
+            <Reveal key={i} delay={i * 100} className="h-full">
               <div className="relative h-full rounded-3xl border-[2.5px] border-ink bg-white p-6 pt-10 transition hover:-translate-y-1 hover:shadow-[6px_6px_0_#111]">
                 <span className="absolute -top-5 left-6 grid size-11 place-items-center rounded-full border-[2.5px] border-ink bg-sun font-display text-lg">{i + 1}</span>
                 <h3 className="text-xl leading-snug font-black">{br(p.title)}</h3>
@@ -149,7 +145,7 @@ function Problems() {
         <Reveal className="mt-16 flex flex-col items-center gap-2 text-center">
           <span className="text-3xl">▼</span>
           <p className="sec-title text-2xl md:text-3xl">
-            その悩み、<span className="marker">{brand.name}</span>がまとめて引き受けます。
+            会社の規模に合わせて、<span className="marker">3つのプラン</span>から選ぶだけ。
           </p>
         </Reveal>
       </div>
@@ -157,187 +153,119 @@ function Problems() {
   );
 }
 
-/* ---------------- Services ---------------- */
-function Services() {
+/* ---------------- Plans ---------------- */
+function Plans() {
   return (
-    <section id="service" className="relative bg-sun py-20 md:py-28">
+    <section id="plans" className="relative bg-sun py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mb-12 text-center">
-          <Logo className="justify-center" />
-          <h2 className="sec-title mt-6 text-2xl md:text-4xl">
-            下記のサービスをまとめて
-            <br />
-            <span className="mt-2 inline-block rounded-2xl bg-ink px-5 py-2 text-sun">
-              月額 <span className="text-4xl md:text-6xl">4.8</span>万円<span className="text-base">(税別)</span>〜
-            </span>
-          </h2>
-          <p className="mt-4 text-xs">※ヒアリング内容をもとに個別にお見積りいたします。</p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((s, i) => (
-            <Reveal key={s.title} delay={(i % 3) * 100} className="h-full">
-              <div className="h-full rounded-3xl border-[2.5px] border-ink bg-white p-6">
-                <div className="flex items-center gap-3">
-                  <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-ink text-sun">
-                    <Icon name={s.icon} className="size-7" />
+        <SectionTitle en="Plans" light>
+          シンプルな<span className="rounded-xl bg-ink px-3 text-sun">3つのプラン</span>
+        </SectionTitle>
+        <p className="-mt-6 mb-14 text-center text-sm font-bold">迷ったら、いちばん選ばれている「スタンダード」がおすすめです。</p>
+
+        <div className="grid items-stretch gap-6 md:grid-cols-3 md:gap-5">
+          {plans.map((p, i) => (
+            <Reveal key={p.id} delay={i * 100} className={`h-full ${p.recommended ? "order-first md:order-none md:-my-4" : ""}`}>
+              <article
+                className={`relative flex h-full flex-col rounded-3xl border-[3px] border-ink p-6 md:p-7 ${
+                  p.recommended ? "bg-ink text-white shadow-[8px_8px_0_#fff]" : "bg-white"
+                }`}
+              >
+                {p.recommended && (
+                  <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full border-[2.5px] border-ink bg-alert px-4 py-1 text-xs font-black whitespace-nowrap text-white">
+                    いちばん人気・おすすめ
                   </span>
-                  <h3 className="text-lg leading-snug font-black">{s.title}</h3>
+                )}
+                <div className="flex items-center justify-between">
+                  <p className="font-display text-2xl">{p.name}</p>
+                  <span className={`grid size-9 place-items-center rounded-full border-2 text-sm font-black ${p.recommended ? "border-sun text-sun" : "border-ink"}`}>{p.rank}</span>
                 </div>
-                <ul className="mt-5 grid gap-1.5 text-sm">
-                  {s.items.map((it) => (
-                    <li key={it} className="flex gap-2 before:mt-2 before:size-1.5 before:shrink-0 before:rounded-full before:bg-indigo">{it}</li>
+                <p className={`mt-1 text-sm font-bold ${p.recommended ? "text-sun" : "text-indigo"}`}>{p.catch}</p>
+                <p className={`mt-4 inline-block self-start rounded-full px-3 py-1 text-xs font-bold ${p.recommended ? "bg-white/15" : "bg-soft"}`}>{p.target}</p>
+
+                <p className="mt-5 flex flex-wrap items-baseline gap-x-1">
+                  <span className="text-sm font-bold">¥</span>
+                  <span className="font-display text-[clamp(2rem,3.3vw,2.6rem)] leading-none">{p.price}</span>
+                  <span className="text-xs font-bold whitespace-nowrap opacity-70">/月(税別)</span>
+                </p>
+                <p className="mt-2 text-xs font-bold opacity-70">{p.hours}</p>
+
+                <a
+                  href={mailto(p.name)}
+                  className={`mt-6 rounded-full py-3.5 text-center font-bold transition hover:-translate-y-0.5 ${
+                    p.recommended ? "bg-sun text-ink hover:bg-white" : "border-[2.5px] border-ink hover:bg-ink hover:text-white"
+                  }`}
+                >
+                  {p.name}で相談する
+                </a>
+
+                <ul className={`mt-6 grid gap-3 border-t-2 border-dashed pt-6 text-sm ${p.recommended ? "border-white/20" : "border-neutral-200"}`}>
+                  {p.base && (
+                    <li className={`flex items-center gap-2 font-black ${p.recommended ? "text-sun" : ""}`}>
+                      <span className="grid size-5 shrink-0 place-items-center rounded-full bg-indigo text-[10px] text-white">＋</span>
+                      {p.base}
+                    </li>
+                  )}
+                  {p.features.map((f) => (
+                    <li key={f} className="flex gap-2">
+                      <span className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full text-[10px] ${p.recommended ? "bg-sun text-ink" : "bg-ink text-white"}`}>✓</span>
+                      {f}
+                    </li>
                   ))}
                 </ul>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------------- Pricing ---------------- */
-function Pricing() {
-  return (
-    <section id="price" className="py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-4">
-        <SectionTitle en="Service & Price">サービス領域と料金の目安</SectionTitle>
-        <p className="-mt-6 mb-12 text-center text-sm">各フェーズのメニューは自由に組み合わせてご利用いただけます。</p>
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {phases.map((p, i) => (
-            <Reveal key={p.no} delay={i * 100} className="h-full">
-              <article className="flex h-full flex-col overflow-hidden rounded-3xl border-[2.5px] border-ink bg-white">
-                <header className="relative bg-ink px-6 py-6 text-white" style={{ background: i === 3 ? "var(--color-indigo)" : undefined }}>
-                  <p className="font-display text-xs tracking-widest text-sun">PHASE {p.no}</p>
-                  <p className="mt-1 text-xl font-black">{p.name}</p>
-                  <p className="mt-3 text-sm leading-snug font-bold opacity-90">{br(p.goal)}</p>
-                  <p className="mt-4 rounded-xl bg-white/10 px-3 py-2 text-sm">
-                    <span className="font-display text-2xl text-sun">{p.rate}</span> 円/h
-                  </p>
-                </header>
-                <div className="grid flex-1 content-start gap-5 p-6">
-                  {p.blocks.map((b) => (
-                    <div key={b.title}>
-                      <p className="mb-2 inline-block rounded-full bg-sun px-3 py-0.5 text-xs font-black">{b.title}</p>
-                      <ul className="grid gap-1 text-sm">
-                        {b.items.map((it) => <li key={it}>・{it}</li>)}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
               </article>
             </Reveal>
           ))}
         </div>
-        <div className="mt-8 hidden items-center gap-2 text-xs font-bold text-neutral-500 xl:flex">
-          <span>運用</span>
-          <span className="h-1 flex-1 rounded-full bg-gradient-to-r from-ink via-sun-deep to-indigo" />
-          <span>経営</span>
-        </div>
+
+        <Compare />
+
+        <ul className="mt-6 grid gap-1 text-xs">
+          {planNotes.map((n) => <li key={n}>※{n}</li>)}
+        </ul>
       </div>
     </section>
   );
 }
 
-/* ---------------- Team ---------------- */
-function Team() {
-  const totals = workload.map((w) => w.hours.reduce((a, b) => a + b, 0));
-  const fmt = (h: number) => (h ? `${h}h` : "—");
+function Compare() {
   return (
-    <section className="bg-soft py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-4">
-        <SectionTitle en="Team">
-          「あれもこれも」に
-          <br className="md:hidden" />
-          <span className="marker">チームで</span>対応します！
-        </SectionTitle>
-
-        <Reveal className="mx-auto grid max-w-4xl items-center gap-6 md:grid-cols-[auto_auto_1fr]">
-          <div className="flex flex-col items-center gap-2">
-            <span className="grid size-24 place-items-center rounded-full border-[2.5px] border-ink bg-white text-3xl">🏢</span>
-            <span className="font-bold">お客様</span>
-          </div>
-          <span className="text-center text-2xl font-black md:text-3xl">⇄</span>
-          <div className="rounded-3xl border-[2.5px] border-ink bg-white p-5">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="rounded-full bg-ink px-4 py-1.5 text-sm font-bold text-white">専任窓口 / PM</span>
-              <span className="text-sm font-bold">がご要望を整理して割り振り</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
-              {experts.map((e) => (
-                <span key={e} className="grid min-h-16 place-items-center rounded-2xl bg-sun px-1 text-center text-xs leading-tight font-bold">{e}</span>
+    <Reveal className="mt-20">
+      <p className="sec-title mb-5 text-center text-xl md:text-2xl">プラン比較表</p>
+      <div className="overflow-x-auto rounded-3xl border-[2.5px] border-ink bg-white">
+        <table className="w-full min-w-[560px] text-center text-sm">
+          <thead>
+            <tr className="border-b-2 border-ink">
+              <th className="w-[34%] p-4" />
+              {plans.map((p) => (
+                <th key={p.id} className={`p-4 ${p.recommended ? "bg-ink text-sun" : ""}`}>
+                  <span className="block font-display text-base">{p.name}</span>
+                  <span className={`text-xs font-bold ${p.recommended ? "text-white/70" : "text-neutral-500"}`}>¥{p.price}/月</span>
+                </th>
               ))}
-            </div>
-            <p className="mt-3 text-right text-xs font-bold text-neutral-500">{brand.name} エキスパートチーム</p>
-          </div>
-        </Reveal>
-
-        <Reveal className="mt-14">
-          <p className="mb-4 text-center font-black">稼働イメージ（例）</p>
-          <div className="overflow-x-auto rounded-3xl border-[2.5px] border-ink bg-white">
-            <table className="w-full min-w-[640px] text-center text-sm">
-              <thead className="bg-ink text-white">
-                <tr>
-                  <th className="p-3" />
-                  {experts.map((e) => <th key={e} className="p-3 text-xs font-bold">{e}</th>)}
-                  <th className="bg-indigo p-3 font-bold">合計</th>
-                </tr>
-              </thead>
-              <tbody>
-                {workload.map((w, i) => (
-                  <tr key={w.month} className="border-t border-neutral-200">
-                    <th className="p-3 font-black">{w.month}</th>
-                    {w.hours.map((h, j) => (
-                      <td key={j} className={`p-3 ${h ? "font-bold" : "text-neutral-300"}`}>
-                        {fmt(h)}
-                        {h >= 8 && <span className="block text-[10px] text-neutral-500">({h / 8}日)</span>}
-                      </td>
-                    ))}
-                    <td className="bg-sun/60 p-3 font-display text-lg">{totals[i]}h</td>
-                  </tr>
+            </tr>
+          </thead>
+          <tbody>
+            {compareRows.map((r) => (
+              <tr key={r.label} className="border-t border-neutral-200">
+                <th className="p-3 pl-5 text-left font-bold">{r.label}</th>
+                {r.values.map((v, j) => (
+                  <td key={j} className={`p-3 ${plans[j].recommended ? "bg-sun/40 font-bold" : ""}`}>
+                    {v === true ? (
+                      <span className="text-lg font-black text-indigo" aria-label="含む">✓</span>
+                    ) : v === false ? (
+                      <span className="text-neutral-300" aria-label="含まない">—</span>
+                    ) : (
+                      v
+                    )}
+                  </td>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="sec-title mt-8 text-center text-xl md:text-2xl">
-            必要な専門家を、<span className="marker">必要なときだけ。</span>
-          </p>
-        </Reveal>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </section>
-  );
-}
-
-/* ---------------- Flow ---------------- */
-function Flow() {
-  return (
-    <section id="flow" className="py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-4">
-        <SectionTitle en="Flow">ご支援までの流れ</SectionTitle>
-        <p className="-mt-6 mb-12 text-center">
-          <span className="rounded-full bg-alert px-4 py-1.5 text-sm font-black text-white">STEP2まで無料！</span>
-        </p>
-        <ol className="grid gap-6 md:grid-cols-4">
-          {steps.map((s, i) => (
-            <Reveal key={s.title} delay={i * 100} className="h-full">
-              <li className="relative flex h-full flex-col rounded-3xl border-[2.5px] border-ink bg-white p-6">
-                {s.free && <span className="absolute -top-3 right-4 rounded-full bg-alert px-3 py-0.5 text-xs font-black text-white">無料</span>}
-                <p className="font-display text-sm text-indigo">STEP {i + 1}</p>
-                <p className="mt-1 text-xl font-black">{s.title}</p>
-                <p className="mt-1 text-xs font-bold text-neutral-500">「{s.sub}」</p>
-                <ul className="mt-4 grid gap-1 text-sm">
-                  {s.items.map((it) => <li key={it}>・{it}</li>)}
-                </ul>
-                {i < steps.length - 1 && (
-                  <span className="absolute top-1/2 -right-5 z-10 hidden size-8 -translate-y-1/2 place-items-center rounded-full bg-sun font-black md:grid">›</span>
-                )}
-              </li>
-            </Reveal>
-          ))}
-        </ol>
-      </div>
-    </section>
+    </Reveal>
   );
 }
 
@@ -349,20 +277,89 @@ function Reasons() {
         <div className="mb-12 text-center">
           <p className="mb-2 font-display text-xs tracking-[.35em] text-sun uppercase">Reason</p>
           <h2 className="sec-title text-[1.7rem] md:text-4xl">
-            <span className="text-sun">{brand.name}</span>が選ばれる理由
+            <span className="text-sun">{brand.name}</span>が選ばれる3つの理由
           </h2>
         </div>
-        <div className="grid gap-5 md:grid-cols-6">
+        <div className="grid gap-5 md:grid-cols-3">
           {reasons.map((r, i) => (
-            <Reveal key={r.big} delay={i * 80} className={`h-full ${i < 2 ? "md:col-span-3" : "md:col-span-2"}`}>
+            <Reveal key={r.big} delay={i * 100} className="h-full">
               <div className="h-full rounded-3xl border-2 border-white/15 bg-white/5 p-6 md:p-8">
                 <p className="font-display text-5xl text-sun/30">{String(i + 1).padStart(2, "0")}</p>
-                <p className="mt-2 text-2xl font-black text-sun">{r.big}</p>
+                <p className="mt-2 text-2xl leading-snug font-black text-sun">{br(r.big)}</p>
                 <p className="mt-3 text-sm leading-relaxed opacity-90">{r.body}</p>
               </div>
             </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- Team ---------------- */
+function Team() {
+  return (
+    <section className="bg-soft py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-4">
+        <SectionTitle en="Team">
+          窓口はひとつ、
+          <br className="md:hidden" />
+          <span className="marker">対応はチームで</span>
+        </SectionTitle>
+        <Reveal className="mx-auto grid max-w-4xl items-center gap-6 md:grid-cols-[auto_auto_1fr]">
+          <div className="flex flex-col items-center gap-2">
+            <span className="grid size-24 place-items-center rounded-full border-[2.5px] border-ink bg-white text-3xl">🏢</span>
+            <span className="font-bold">お客様</span>
+          </div>
+          <span className="text-center text-2xl font-black md:text-3xl">⇄</span>
+          <div className="rounded-3xl border-[2.5px] border-ink bg-white p-5">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <span className="rounded-full bg-ink px-4 py-1.5 text-sm font-bold text-white">専任窓口</span>
+              <span className="text-sm font-bold">がご依頼を受けて、最適な専門家へ</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
+              {experts.map((e) => (
+                <span key={e} className="grid min-h-16 place-items-center rounded-2xl bg-sun px-1 text-center text-xs leading-tight font-bold">{e}</span>
+              ))}
+            </div>
+            <p className="mt-3 text-right text-xs font-bold text-neutral-500">{brand.name} エキスパートチーム</p>
+          </div>
+        </Reveal>
+        <p className="sec-title mt-12 text-center text-xl md:text-2xl">
+          どのプランでも、<span className="marker">必要な専門家が必要なときに。</span>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- Flow ---------------- */
+function Flow() {
+  return (
+    <section id="flow" className="py-20 md:py-28">
+      <div className="mx-auto max-w-5xl px-4">
+        <SectionTitle en="Flow">ご利用開始までの3ステップ</SectionTitle>
+        <p className="-mt-6 mb-12 text-center">
+          <span className="rounded-full bg-alert px-4 py-1.5 text-sm font-black text-white">ご提案まで無料！</span>
+        </p>
+        <ol className="grid gap-6 md:grid-cols-3 md:gap-10">
+          {steps.map((s, i) => (
+            <Reveal key={s.title} delay={i * 100} className="h-full">
+              <li className="relative flex h-full flex-col rounded-3xl border-[2.5px] border-ink bg-white p-6">
+                {s.free && <span className="absolute -top-3 right-4 rounded-full bg-alert px-3 py-0.5 text-xs font-black text-white">無料</span>}
+                <p className="font-display text-sm text-indigo">STEP {i + 1}</p>
+                <p className="mt-1 text-xl font-black">{s.title}</p>
+                <p className="mt-1 text-xs font-bold text-neutral-500">「{s.sub}」</p>
+                <ul className="mt-4 grid gap-1 text-sm">
+                  {s.items.map((it) => <li key={it}>・{it}</li>)}
+                </ul>
+                {i < steps.length - 1 && (
+                  <span className="absolute top-1/2 -right-8 z-10 hidden size-8 -translate-y-1/2 place-items-center rounded-full bg-sun font-black md:grid">›</span>
+                )}
+              </li>
+            </Reveal>
+          ))}
+        </ol>
       </div>
     </section>
   );
@@ -434,81 +431,6 @@ function Message() {
   );
 }
 
-/* ---------------- Terms ---------------- */
-function Terms() {
-  return (
-    <section className="py-20 md:py-28">
-      <div className="mx-auto max-w-4xl px-4">
-        <SectionTitle en="Terms">サービスご提供にあたって</SectionTitle>
-        <div className="grid gap-6">
-          <Reveal className="rounded-3xl border-[2.5px] border-ink p-6 md:p-8">
-            <p className="text-lg font-black">基本対応時間</p>
-            <p className="mt-2 font-display text-3xl">{terms.hours}</p>
-            <ul className="mt-3 grid gap-1 text-sm text-neutral-600">
-              {terms.hoursNote.map((n) => <li key={n}>※{n}</li>)}
-            </ul>
-          </Reveal>
-          <Reveal className="rounded-3xl bg-soft p-6 md:p-8">
-            <p className="text-lg font-black">月額料金に含まれないもの</p>
-            <ul className="mt-4 grid gap-2 text-sm md:grid-cols-2">
-              {terms.excluded.map((e) => <li key={e} className="flex gap-2"><span className="text-indigo">●</span>{e}</li>)}
-            </ul>
-          </Reveal>
-          <Reveal className="rounded-3xl border-2 border-neutral-200 p-6 text-sm leading-relaxed md:p-8">
-            <p className="mb-2 text-lg font-black">サービス提供会社</p>
-            <p className="font-bold">{brand.company}</p>
-            <p>{brand.zip} {brand.address}</p>
-            <p>TEL {brand.tel}</p>
-            <p>URL <a href={brand.url} className="text-indigo underline">{brand.url}</a></p>
-          </Reveal>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------------- Domains ---------------- */
-function Domains() {
-  return (
-    <section className="bg-soft py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-4">
-        <SectionTitle en="Coverage">
-          企業の情シスが
-          <br className="md:hidden" />
-          カバーすべき領域
-        </SectionTitle>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {domains.map((d, i) => (
-            <Reveal key={d.area} delay={(i % 4) * 80} className={`h-full ${i === 0 ? "sm:col-span-2" : ""}`}>
-              <div className={`h-full rounded-3xl border-[2.5px] border-ink p-5 ${i === 0 ? "bg-sun" : "bg-white"}`}>
-                <p className="mb-4 inline-block rounded-full bg-ink px-4 py-1 text-sm font-black text-white">{d.area}</p>
-                <div className={`grid gap-4 ${i === 0 ? "sm:grid-cols-3" : ""}`}>
-                  {d.groups.map((g) => (
-                    <div key={g.title}>
-                      <p className="mb-2 text-sm font-black">{g.title}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {g.items.map((it) => (
-                          <span key={it} className="rounded-lg border border-ink/15 bg-white px-2 py-1 text-xs">{it}</span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-        <Reveal className="mt-6 rounded-3xl border-[2.5px] border-dashed border-indigo bg-white p-5">
-          <p className="mb-3 text-sm font-black text-indigo">部門横断</p>
-          <div className="flex flex-wrap gap-2">
-            {crossDomains.map((c) => <span key={c} className="rounded-full bg-indigo px-4 py-1.5 text-sm font-bold text-white">{c}</span>)}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
 /* ---------------- FAQ ---------------- */
 function Faq() {
   return (
@@ -535,10 +457,31 @@ function Faq() {
   );
 }
 
+/* ---------------- Terms ---------------- */
+function Terms() {
+  return (
+    <section className="pb-20 md:pb-28">
+      <div className="mx-auto grid max-w-4xl gap-6 px-4 md:grid-cols-[auto_1fr]">
+        <Reveal className="rounded-3xl border-[2.5px] border-ink p-6 md:p-8">
+          <p className="text-sm font-black">対応時間</p>
+          <p className="mt-2 font-display text-3xl whitespace-nowrap">{hours.label}</p>
+          <p className="mt-2 text-sm text-neutral-600">{hours.note}</p>
+        </Reveal>
+        <Reveal className="rounded-3xl bg-soft p-6 md:p-8">
+          <p className="text-sm font-black">月額料金に含まれないもの</p>
+          <ul className="mt-3 grid gap-1.5 text-sm sm:grid-cols-2">
+            {excluded.map((e) => <li key={e} className="flex gap-2"><span className="text-indigo">●</span>{e}</li>)}
+          </ul>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 /* ---------------- SNS ---------------- */
 function Sns() {
   return (
-    <section className="pb-10">
+    <section className="pb-16">
       <div className="mx-auto max-w-3xl px-4 text-center">
         <p className="font-black">各種SNSでも情報発信中！</p>
         <div className="mt-4 flex justify-center gap-3">
@@ -556,29 +499,40 @@ function Contact() {
   return (
     <section id="contact" className="relative bg-sun py-20 md:py-28">
       <div className="dots absolute top-0 right-0 hidden h-40 w-72 opacity-20 md:block" style={{ clipPath: "polygon(30% 0,100% 0,100% 100%)" }} />
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 md:grid-cols-[1fr_1.3fr]">
-        <div>
-          <p className="mb-2 font-display text-xs tracking-[.35em] uppercase">Contact</p>
-          <h2 className="sec-title text-3xl md:text-4xl">
-            情シスのお悩み解決に、
-            <br />
-            まずは「資料請求」を。
-          </h2>
-          <p className="mt-6 leading-loose">
-            サービス内容や料金プランを
-            <br />
-            分かりやすくまとめた資料をご用意しています。
-            <br />
-            ご相談だけでもお気軽にどうぞ。
-          </p>
-          <a href={`tel:${brand.tel}`} className="mt-8 inline-flex items-center gap-3 rounded-2xl border-[2.5px] border-ink bg-white px-6 py-4">
-            <span className="text-sm font-bold">お電話でも</span>
-            <span className="font-display text-2xl">{brand.tel}</span>
+      <div className="relative mx-auto max-w-4xl px-4 text-center">
+        <p className="mb-2 font-display text-xs tracking-[.35em] uppercase">Contact</p>
+        <h2 className="sec-title text-3xl md:text-4xl">
+          ご相談は、メールで
+          <br className="md:hidden" />
+          お気軽にどうぞ。
+        </h2>
+        <p className="mt-6 leading-loose">
+          下記アドレスまでご連絡ください。
+          <br />
+          プランが決まっていなくても大丈夫です。
+        </p>
+
+        <div className="mx-auto mt-10 max-w-2xl rounded-[2rem] border-[3px] border-ink bg-white p-6 shadow-[8px_8px_0_#111] md:p-10">
+          <Mascot className="mx-auto -mt-16 mb-2 w-20 md:-mt-20 md:w-24" wave />
+          <p className="text-xs font-bold text-neutral-500">お問い合わせ先</p>
+          <a href={mailto()} className="mt-2 block font-display text-[clamp(1.4rem,6vw,2.6rem)] break-all hover:text-indigo">
+            {brand.email}
           </a>
-          <p className="mt-2 text-xs">受付：{terms.hours}</p>
-          <Mascot className="mt-10 hidden w-36 md:block" wave />
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <a href={mailto()} className="rounded-full bg-ink px-8 py-3.5 font-bold text-white transition hover:bg-indigo">メールを作成する →</a>
+            <CopyEmail />
+          </div>
+
+          <div className="mt-8 rounded-2xl bg-soft p-5 text-left text-sm">
+            <p className="mb-2 font-black">メールに書いていただくとスムーズです</p>
+            <ul className="grid gap-1 sm:grid-cols-2">
+              {["会社名・お名前", "従業員数", "ご希望のプラン（未定でOK）", "いま困っていること"].map((t) => (
+                <li key={t} className="flex gap-2"><span className="text-indigo">✓</span>{t}</li>
+              ))}
+            </ul>
+          </div>
+          <p className="mt-5 text-xs text-neutral-600">受付：{hours.label}（土日祝も対応）／ 原則24時間以内にご返信します</p>
         </div>
-        <ContactForm />
       </div>
     </section>
   );
@@ -593,6 +547,7 @@ function Footer() {
           <Logo className="[&>span:last-child]:text-white" />
           <p className="mt-4 text-sm opacity-80">{brand.company}</p>
           <p className="text-xs opacity-60">{brand.zip} {brand.address}</p>
+          <p className="text-xs opacity-60">MAIL {brand.email}</p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs opacity-80">
           <a href="#" className="hover:underline">プライバシーポリシー</a>

@@ -25,7 +25,7 @@ export function Header() {
           {nav.map((n) => (
             <a key={n.href} href={n.href} className="hover:text-indigo">{n.label}</a>
           ))}
-          <a href="#contact" className="rounded-full bg-ink px-5 py-2.5 text-white hover:bg-indigo">資料請求</a>
+          <a href="#contact" className="rounded-full bg-ink px-5 py-2.5 text-white hover:bg-indigo">無料相談</a>
         </nav>
         <button
           className="relative grid size-11 place-items-center lg:hidden"
@@ -45,7 +45,7 @@ export function Header() {
             </li>
           ))}
           <li className="mt-6">
-            <a href="#contact" onClick={() => setOpen(false)} className="block rounded-full bg-ink py-4 text-center text-white">資料請求・お問い合わせ</a>
+            <a href="#contact" onClick={() => setOpen(false)} className="block rounded-full bg-ink py-4 text-center text-white">メールで無料相談</a>
           </li>
         </ul>
       </div>

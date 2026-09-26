@@ -1,4 +1,4 @@
-import { brand } from "@/content";
+import { brand, hours, mailto } from "@/content";
 import { Mascot } from "./Mascot";
 import { Reveal } from "./Reveal";
 
@@ -10,33 +10,28 @@ export function CtaBlock() {
         <div className="relative grid items-center gap-8 md:grid-cols-[1fr_auto]">
           <div>
             <p className="sec-title text-2xl md:text-3xl">
-              情シスの困りごと、
+              どのプランが合うか、
               <br />
-              まずは「資料請求」から。
+              まずは無料でご相談ください。
             </p>
             <p className="mt-3 text-sm leading-relaxed md:text-base">
-              サービス内容・対応範囲・導入の流れを
+              いまの状況を伺って、最適なプランをご提案します。
               <br className="hidden md:block" />
-              1冊にまとめてお届けします。
+              「まだ検討段階」でも大歓迎です。
             </p>
-            <ol className="mt-5 flex flex-wrap gap-2 text-xs font-bold">
-              {["フォームに入力", "内容を確認して送信", "資料をダウンロード"].map((s, i) => (
-                <li key={s} className="rounded-full bg-white px-3 py-1.5">
-                  {i + 1}. {s}
-                </li>
-              ))}
-            </ol>
+            <p className="mt-5 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-bold">受付：{hours.label}（土日祝も対応）</p>
           </div>
           <div className="flex flex-col items-center gap-3">
             <Mascot className="w-20 md:w-24" />
-            <a href="#contact" className="rounded-full bg-ink px-8 py-4 font-bold text-white transition hover:-translate-y-0.5 hover:bg-indigo">
-              資料請求/お問い合わせ →
+            <a href={mailto()} className="rounded-full bg-ink px-8 py-4 font-bold text-white transition hover:-translate-y-0.5 hover:bg-indigo">
+              メールで無料相談 →
             </a>
-            <a href={`tel:${brand.tel}`} className="text-sm font-bold">
-              TEL <span className="font-display text-lg">{brand.tel}</span>
-            </a>
+            <a href="#plans" className="text-sm font-bold underline underline-offset-4">プランを比較する</a>
           </div>
         </div>
+        <p className="relative mt-6 text-center text-xs md:text-left">
+          宛先：<span className="font-bold">{brand.email}</span>
+        </p>
       </div>
     </Reveal>
   );
