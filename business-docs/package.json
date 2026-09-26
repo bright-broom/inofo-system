@@ -3,12 +3,17 @@
   "description": "ラクシスの営業・契約・運用書類の生成スクリプト（料金は ../config/pricing.json）",
   "scripts": {
     "build": "./build_all.sh",
-    "check": "./build_all.sh --check"
+    "check": "./build_all.sh --check",
+    "typecheck": "tsc"
   },
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "docx": "^9.7.2",
     "mammoth": "^1.12.3"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "typescript": "^5.9.3"
+  }
 }

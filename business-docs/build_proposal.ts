@@ -1,9 +1,9 @@
-// 提案書テンプレートの生成スクリプト。`node build_proposal.js` で docx を再生成する。
+// 提案書テンプレートの生成スクリプト。`node build_proposal.ts` で docx を再生成する。
 // 〔　〕は案件ごとに書き換える箇所。記入例は「サンプル商事株式会社（従業員25名・スタンダード）」。
-const fs = require("fs");
-const { Packer, Paragraph, PageBreak, BorderStyle, AlignmentType } = require("docx");
-const { INDIGO, SUN, MUTED, run, p, h1, h2, bullet, blank, table, box, makeDoc } = require("./lib_docx");
-const { pricing, yen, plan, recommended, HOURS } = require("./lib_pricing");
+import fs from "node:fs";
+import { Packer, Paragraph, PageBreak, BorderStyle, AlignmentType } from "docx";
+import { INDIGO, SUN, MUTED, run, p, h1, h2, bullet, blank, table, box, makeDoc } from "./lib_docx.ts";
+import { pricing, yen, plan, recommended, HOURS } from "./lib_pricing.ts";
 const L = plan("lite"), S = plan("standard");
 
 /* ---------------------------------------------------------------- 表紙 */

@@ -1,16 +1,40 @@
 // config/pricing.json（料金・時間の唯一の定義）を読み、書類で使う表記に整える。
-const pricing = require("../config/pricing.json");
+import pricingJson from "../config/pricing.json" with { type: "json" };
 
-const yen = (n) => n.toLocaleString("en-US"); // 30000 → "30,000"
+export type Plan = {
+  id: string;
+  rank: string;
+  name: string;
+  price: number;
+  hours: number;
+  employees: (number | null)[];
+  reply: string;
+  pcSetupPerMonth: number;
+  meetingsPerMonth: number;
+  recommended?: boolean;
+};
+
+export const pricing = pricingJson as typeof pricingJson & { plans: Plan[] };
+
+export const yen = (n: number): string => n.toLocaleString("en-US"); // 30000 → "30,000"
+
 const { weekday, holiday } = pricing.serviceHours;
-const hoursLabel = (holidayWord = "土日祝") =>
+export const hoursLabel = (holidayWord = "土日祝"): string =>
   `平日 ${weekday.open}〜${weekday.close}／${holidayWord} ${holiday.open}〜${holiday.close}`;
-const target = ([min, max]) => `従業員 ${min ?? ""}〜${max}名`;
-const plan = (id) => pricing.plans.find((p) => p.id === id);
-const recommended = pricing.plans.find((p) => p.recommended);
+export const HOURS = hoursLabel();
+
+export const target = ([min, max]: (number | null)[]): string => `従業員 ${min ?? ""}〜${max}名`;
+
+export const plan = (id: string): Plan => {
+  const found = pricing.plans.find((p) => p.id === id);
+  if (!found) throw new Error(`pricing.json にプラン "${id}" がありません`);
+  return found;
+};
+
+export const recommended: Plan = pricing.plans.find((p) => p.recommended) ?? plan("standard");
 
 // プランごとに含まれる内容（契約書 別紙1・価格表で共通）。行 = [項目名, プランごとの値を返す関数]
-const FEATURE_ROWS = [
+const FEATURE_ROWS: [string, (x: Plan) => string][] = [
   ["月額委託料（税別）", (x) => `${yen(x.price)}円`],
   ["月間対応時間", (x) => `${x.hours}時間`],
   ["返信の目安（対応時間内）", (x) => x.reply],
@@ -26,9 +50,8 @@ const FEATURE_ROWS = [
   ["業務自動化・SaaS連携の構築", (x) => (x.id === "pro" ? "○" : "—")],
   ["優先対応", (x) => (x.id === "pro" ? "○" : "—")],
 ];
-const featureTable = () => [
+
+export const featureTable = (): string[][] => [
   ["項目", ...pricing.plans.map((x) => x.name)],
   ...FEATURE_ROWS.map(([label, f]) => [label, ...pricing.plans.map(f)]),
 ];
-
-module.exports = { pricing, yen, hoursLabel, target, plan, recommended, HOURS: hoursLabel(), FEATURE_ROWS, featureTable };

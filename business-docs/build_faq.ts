@@ -1,15 +1,15 @@
-// 社員向け「ITよくある質問」テンプレートの生成スクリプト。`node build_faq.js` で docx を再生成する。
+// 社員向け「ITよくある質問」テンプレートの生成スクリプト。`node build_faq.ts` で docx を再生成する。
 // お客様ごとに複製し、〔　〕（URL・機種名・連絡先など）を埋めて社員に配る。
 // 月次レポートで問い合わせが多かった内容を、ここに足していく運用を想定。
-const fs = require("fs");
-const { Packer, Paragraph, PageBreak, BorderStyle } = require("docx");
-const { INDIGO, SUN, MUTED, run, p, h1, bullet, blank, table, box, makeDoc } = require("./lib_docx");
+import fs from "node:fs";
+import { Packer, Paragraph, PageBreak, BorderStyle } from "docx";
+import { INDIGO, SUN, MUTED, run, p, h1, bullet, blank, table, box, makeDoc } from "./lib_docx.ts";
 
-const { HOURS } = require("./lib_pricing");
+import { HOURS } from "./lib_pricing.ts";
 
 // [カテゴリ, [[質問, [答えの行...]], ...]]
 // 答えの行：文字列 = 段落、"・" で始まる = 箇条書き、"→" で始まる = 関連書類への案内
-const FAQ = [
+const FAQ: [string, [string, string[]][]][] = [
   ["ログイン・パスワード", [
     ["パスワードを忘れました", [
       "〔パスワード再設定のページ（URL）〕から、自分で再設定できます。多要素認証で本人確認をします。",
@@ -155,7 +155,7 @@ const intro = [
 ];
 
 /* ---------------------------------------------------------------- 本文 */
-function answer(line) {
+function answer(line: string) {
   if (line.startsWith("・")) return bullet(line.slice(1));
   if (line.startsWith("→")) return p(`関連：${line.slice(1).trim()}`, { color: MUTED, size: 19, indent: { left: 420 } });
   return p(line, { indent: { left: 420 } });

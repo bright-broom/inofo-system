@@ -1,11 +1,11 @@
-// インシデント対応手順書テンプレートの生成スクリプト。`node build_incident.js` で docx を再生成する。
+// インシデント対応手順書テンプレートの生成スクリプト。`node build_incident.ts` で docx を再生成する。
 // お客様ごとに複製し、〔　〕（連絡先・責任者など）を埋めて社内に配る。
 // 前提：ラクシスは24時間対応ではない（業務委託契約書 第4条）。対応時間外の初動は社内で行う。
-const fs = require("fs");
-const { Packer, Paragraph, PageBreak, BorderStyle } = require("docx");
-const { INDIGO, SUN, MUTED, run, p, h1, h2, bullet, blank, table, box, makeDoc } = require("./lib_docx");
+import fs from "node:fs";
+import { Packer, Paragraph, PageBreak, BorderStyle } from "docx";
+import { INDIGO, SUN, MUTED, run, p, h1, h2, bullet, blank, table, box, makeDoc } from "./lib_docx.ts";
 
-const { HOURS } = require("./lib_pricing");
+import { HOURS } from "./lib_pricing.ts";
 
 /* ---------------------------------------------------------------- 表紙 */
 const cover = [

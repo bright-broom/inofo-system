@@ -6,8 +6,8 @@ set -e
 cd "$(dirname "$0")"
 PY=.venv/bin/python
 if [ "$1" = "--check" ]; then $PY snapshot.py "${TMPDIR:-/tmp}/rakusys_before.json" >/dev/null 2>&1; fi
-for s in build.js build_proposal.js build_incident.js build_manual.js build_faq.js build_pricelist.js build_deck.js; do
-  [ -f "$s" ] && node "$s" 2>/dev/null
+for s in build_contracts.ts build_proposal.ts build_incident.ts build_manual.ts build_faq.ts build_pricelist.ts build_deck.ts; do
+  node "$s"
 done
 for s in build_xlsx.py build_report.py build_hearing.py build_onboarding.py build_offboarding.py; do
   $PY "$s"

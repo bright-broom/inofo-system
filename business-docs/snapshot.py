@@ -19,8 +19,8 @@ OUT = Path(__file__).parent / "out"
 
 
 def docx_text(path: Path) -> str:
-    js = "require('mammoth').extractRawText({path:process.argv[1]}).then(r=>process.stdout.write(r.value))"
-    return subprocess.run(["node", "-e", js, str(path)], capture_output=True, text=True, check=True, cwd=Path(__file__).parent).stdout
+    here = Path(__file__).parent
+    return subprocess.run(["node", str(here / "docx_text.ts"), str(path)], capture_output=True, text=True, check=True, cwd=here).stdout
 
 
 def xlsx_values(path: Path) -> dict:

@@ -1,9 +1,9 @@
-// 価格表の生成スクリプト。`node build_pricelist.js` で docx を再生成する。
+// 価格表の生成スクリプト。`node build_pricelist.ts` で docx を再生成する。
 // 金額・時間・条件はすべて config/pricing.json から読む。この書類に数値は直書きしない。
-const fs = require("fs");
-const { Packer, Paragraph, BorderStyle } = require("docx");
-const { INDIGO, SUN, MUTED, run, p, h1, bullet, table, makeDoc } = require("./lib_docx");
-const { pricing, yen, target, HOURS, featureTable } = require("./lib_pricing");
+import fs from "node:fs";
+import { Packer, Paragraph, BorderStyle } from "docx";
+import { INDIGO, SUN, MUTED, run, p, h1, bullet, table, makeDoc } from "./lib_docx.ts";
+import { pricing, yen, target, HOURS, featureTable } from "./lib_pricing.ts";
 
 const TAX = 0.1; // 標準税率（税込の参考表示に使う）
 const plans = pricing.plans;

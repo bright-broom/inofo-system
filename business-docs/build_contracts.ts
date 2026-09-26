@@ -1,11 +1,13 @@
-// 契約書テンプレートの生成スクリプト。`node build.js` で docx を再生成する。
+// 契約書（業務委託契約書・秘密保持契約書）の生成スクリプト。`node build_contracts.ts` で docx を再生成する。
 // 〔　〕は案件ごとに埋める箇所。
-const fs = require("fs");
-const {
-  Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType,
-  BorderStyle, ShadingType, PageBreak, Footer, PageNumber, TabStopType,
-} = require("docx");
-const { pricing, yen, hoursLabel, featureTable } = require("./lib_pricing");
+import fs from "node:fs";
+import {
+  AlignmentType, BorderStyle, Document, Footer, Packer, PageBreak, PageNumber, Paragraph, ShadingType,
+  Table, TableCell, TableRow, TabStopType, TextRun, WidthType,
+} from "docx";
+import type { IIndentAttributesProperties } from "docx";
+import { featureTable, hoursLabel, pricing, yen } from "./lib_pricing.ts";
+
 const OVER = `${yen(pricing.overage.ratePerHour)}円`;
 const UNIT = pricing.overage.unitMinutes;
 
@@ -13,9 +15,18 @@ const FONT = { ascii: "Yu Mincho", eastAsia: "游明朝", hAnsi: "Yu Mincho", cs
 const SIZE = 21; // 10.5pt
 const CONTENT_WIDTH = 9026; // A4 幅 - 左右余白 1440*2
 
-const run = (text, opts = {}) => new TextRun({ text, font: FONT, size: SIZE, ...opts });
+const run = (text: string, opts: { bold?: boolean; size?: number } = {}): TextRun =>
+  new TextRun({ text, font: FONT, size: SIZE, ...opts });
 
-function p(text, opts = {}) {
+type POpts = {
+  bold?: boolean;
+  size?: number;
+  align?: (typeof AlignmentType)[keyof typeof AlignmentType];
+  indent?: IIndentAttributesProperties;
+  spacing?: { before?: number; after?: number; line?: number };
+};
+
+function p(text: string, opts: POpts = {}): Paragraph {
   const { bold, align, indent, spacing, size } = opts;
   return new Paragraph({
     alignment: align,
@@ -26,7 +37,7 @@ function p(text, opts = {}) {
 }
 
 // 条の見出し
-const articleTitle = (text) =>
+const articleTitle = (text: string): Paragraph =>
   new Paragraph({
     keepNext: true,
     spacing: { before: 240, after: 80, line: 360 },
@@ -34,7 +45,7 @@ const articleTitle = (text) =>
   });
 
 // 項（1項目は番号なし、2項目以降は「2」「3」…）
-const clause = (text, i) =>
+const clause = (text: string, i: number): Paragraph =>
   new Paragraph({
     indent: i === 0 ? { firstLine: 210 } : { left: 210, hanging: 210 },
     spacing: { line: 360, after: 60 },
@@ -42,7 +53,7 @@ const clause = (text, i) =>
   });
 
 // 号（(1)(2)…）
-const item = (text, i) =>
+const item = (text: string, i: number): Paragraph =>
   new Paragraph({
     indent: { left: 630, hanging: 420 },
     spacing: { line: 360, after: 40 },
@@ -50,7 +61,7 @@ const item = (text, i) =>
   });
 
 // body: 文字列 = 項、配列 = 直前の項にぶら下がる号
-function article(title, body) {
+function article(title: string, body: (string | string[])[]): Paragraph[] {
   const out = [articleTitle(title)];
   let n = 0;
   for (const b of body) {
@@ -60,30 +71,29 @@ function article(title, body) {
   return out;
 }
 
-const title = (text) =>
+const title = (text: string): Paragraph =>
   new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { after: 360 },
     children: [run(text, { bold: true, size: 32 })],
   });
 
-const blank = () => new Paragraph({ children: [run("")] });
+const blank = (): Paragraph => new Paragraph({ children: [run("")] });
 
 const border = { style: BorderStyle.SINGLE, size: 4, color: "808080" };
 const borders = { top: border, bottom: border, left: border, right: border };
 
-function cell(text, width, { head = false, bold = false } = {}) {
-  const lines = Array.isArray(text) ? text : [text];
+function cell(text: string, width: number, { head = false, bold = false } = {}): TableCell {
   return new TableCell({
     width: { size: width, type: WidthType.DXA },
     borders,
     shading: head ? { type: ShadingType.CLEAR, color: "auto", fill: "EDEDED" } : undefined,
     margins: { top: 60, bottom: 60, left: 100, right: 100 },
-    children: lines.map((t) => new Paragraph({ spacing: { line: 300 }, children: [run(t, { bold: head || bold, size: 19 })] })),
+    children: [new Paragraph({ spacing: { line: 300 }, children: [run(text, { bold: head || bold, size: 19 })] })],
   });
 }
 
-function table(columnWidths, rows) {
+function table(columnWidths: number[], rows: string[][]): Table {
   const total = columnWidths.reduce((a, b) => a + b, 0);
   return new Table({
     width: { size: total, type: WidthType.DXA },
@@ -95,8 +105,10 @@ function table(columnWidths, rows) {
 }
 
 // 署名欄
-function signatures(partyA, partyB) {
-  const block = (label, lines) => [
+type Party = { label: string; lines: { text: string; seal?: boolean }[] };
+
+function signatures(partyA: Party, partyB: Party): Paragraph[] {
+  const block = ({ label, lines }: Party) => [
     p(label, { bold: true, spacing: { before: 240 } }),
     ...lines.map((l) =>
       new Paragraph({
@@ -107,10 +119,10 @@ function signatures(partyA, partyB) {
       }),
     ),
   ];
-  return [...block(partyA.label, partyA.lines), ...block(partyB.label, partyB.lines)];
+  return [...block(partyA), ...block(partyB)];
 }
 
-function makeDoc(children) {
+function makeDoc(children: (Paragraph | Table)[]): Document {
   return new Document({
     styles: { default: { document: { run: { font: FONT, size: SIZE } } } },
     sections: [
@@ -132,11 +144,11 @@ function makeDoc(children) {
   });
 }
 
-const partyA = {
+const partyA: Party = {
   label: "甲（委託者）",
   lines: [{ text: "住所　〔　　　　　　　　　　　　　　　　〕" }, { text: "名称　〔　　　　　　　　　　　　　　　　〕" }, { text: "代表者　〔役職・氏名　　　　　　　　　　〕", seal: true }],
 };
-const partyB = {
+const partyB: Party = {
   label: "乙（受託者）",
   lines: [{ text: "住所　〔　　　　　　　　　　　　　　　　〕" }, { text: "屋号　ラクシス" }, { text: "氏名　〔　　　　　　　　　　　　　　　　〕", seal: true }],
 };
@@ -371,7 +383,8 @@ const nda = [
 
 (async () => {
   fs.mkdirSync("out", { recursive: true });
-  for (const [name, children] of [["ITサポート業務委託契約書（準委任）", contract], ["秘密保持契約書", nda]]) {
+  const docs: [string, (Paragraph | Table)[]][] = [["ITサポート業務委託契約書（準委任）", contract], ["秘密保持契約書", nda]];
+  for (const [name, children] of docs) {
     fs.writeFileSync(`out/${name}.docx`, await Packer.toBuffer(makeDoc(children)));
     console.log(`out/${name}.docx`);
   }

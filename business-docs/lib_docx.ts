@@ -1,19 +1,29 @@
 // 提案書・インシデント対応手順書などで共通に使う Word 部品。
-const {
-  Document, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType,
-  BorderStyle, ShadingType, Footer, PageNumber, HeadingLevel, LevelFormat,
-} = require("docx");
+import {
+  AlignmentType, BorderStyle, Document, Footer, HeadingLevel, LevelFormat, PageNumber, Paragraph,
+  ShadingType, Table, TableCell, TableRow, TextRun, WidthType,
+} from "docx";
+import type { IIndentAttributesProperties } from "docx";
 
 const FONT = { ascii: "Yu Gothic", eastAsia: "游ゴシック", hAnsi: "Yu Gothic", cs: "Yu Gothic" };
 const INK = "161513";
-const INDIGO = "3D38E0";
-const SUN = "FFED69";
-const MUTED = "55534C";
+export const INDIGO = "3D38E0";
+export const SUN = "FFED69";
+export const MUTED = "55534C";
 const W = 9026; // A4 本文幅（左右余白 1440）
 
-const run = (text, o = {}) => new TextRun({ text, font: FONT, size: o.size ?? 21, bold: o.bold, color: o.color ?? INK });
+type RunOpts = { size?: number; bold?: boolean; color?: string };
+type ParaOpts = RunOpts & {
+  align?: (typeof AlignmentType)[keyof typeof AlignmentType];
+  indent?: IIndentAttributesProperties;
+  after?: number;
+  before?: number;
+};
 
-const p = (text, o = {}) =>
+export const run = (text: string, o: RunOpts = {}): TextRun =>
+  new TextRun({ text, font: FONT, size: o.size ?? 21, bold: o.bold, color: o.color ?? INK });
+
+export const p = (text: string | TextRun[], o: ParaOpts = {}): Paragraph =>
   new Paragraph({
     alignment: o.align,
     indent: o.indent,
@@ -21,7 +31,7 @@ const p = (text, o = {}) =>
     children: Array.isArray(text) ? text : [run(text, o)],
   });
 
-const h1 = (no, text) =>
+export const h1 = (no: string, text: string): Paragraph =>
   new Paragraph({
     heading: HeadingLevel.HEADING_1,
     keepNext: true,
@@ -30,22 +40,22 @@ const h1 = (no, text) =>
     children: [run(`${no}　`, { size: 30, bold: true, color: INDIGO }), run(text, { size: 30, bold: true })],
   });
 
-const h2 = (text) =>
+export const h2 = (text: string): Paragraph =>
   new Paragraph({ keepNext: true, spacing: { before: 200, after: 80 }, children: [run(text, { size: 23, bold: true })] });
 
-const bullet = (text) =>
+export const bullet = (text: string): Paragraph =>
   new Paragraph({ numbering: { reference: "dot", level: 0 }, spacing: { line: 340, after: 60 }, children: [run(text)] });
 
 // 番号付きの手順（1. 2. 3.）。ref ごとに番号が1から振り直される
-const step = (text, ref) =>
+export const step = (text: string, ref: string): Paragraph =>
   new Paragraph({ numbering: { reference: ref, level: 0 }, spacing: { line: 340, after: 60 }, children: [run(text)] });
 
-const blank = () => new Paragraph({ children: [run("")] });
+export const blank = (): Paragraph => new Paragraph({ children: [run("")] });
 
 const line = { style: BorderStyle.SINGLE, size: 4, color: "A8A59B" };
 const borders = { top: line, bottom: line, left: line, right: line };
 
-function cell(text, width, o = {}) {
+function cell(text: string | string[], width: number, o: { fill?: string; bold?: boolean; color?: string } = {}): TableCell {
   const lines = Array.isArray(text) ? text : [text];
   return new TableCell({
     width: { size: width, type: WidthType.DXA },
@@ -57,7 +67,11 @@ function cell(text, width, o = {}) {
 }
 
 // rows[0] はヘッダー。firstColBold で1列目を太字に、highlightRow の行を黄色に
-function table(widths, rows, { firstColBold = true, highlightRow } = {}) {
+export function table(
+  widths: number[],
+  rows: string[][],
+  { firstColBold = true, highlightRow }: { firstColBold?: boolean; highlightRow?: number } = {},
+): Table {
   return new Table({
     width: { size: widths.reduce((a, b) => a + b, 0), type: WidthType.DXA },
     columnWidths: widths,
@@ -75,7 +89,11 @@ function table(widths, rows, { firstColBold = true, highlightRow } = {}) {
 }
 
 // 枠つきボックス（1セルの表）。lines は [ラベル, 本文] の配列、または文字列の配列
-function box(title, lines, { fill = "FFFBE0", color = INDIGO } = {}) {
+export function box(
+  title: string,
+  lines: (string | [string, string])[],
+  { fill = "FFFBE0", color = INDIGO }: { fill?: string; color?: string } = {},
+): Table {
   const thick = { style: BorderStyle.SINGLE, size: 18, color: INK };
   return new Table({
     width: { size: W, type: WidthType.DXA },
@@ -105,7 +123,7 @@ function box(title, lines, { fill = "FFFBE0", color = INDIGO } = {}) {
 }
 
 // A4・表紙はフッターなし。stepRefs は番号付き手順に使う ref の一覧
-function makeDoc(footerLabel, children, { stepRefs = [] } = {}) {
+export function makeDoc(footerLabel: string, children: (Paragraph | Table)[], { stepRefs = [] }: { stepRefs?: string[] } = {}): Document {
   return new Document({
     styles: {
       default: { document: { run: { font: FONT, size: 21 } } },
@@ -136,5 +154,3 @@ function makeDoc(footerLabel, children, { stepRefs = [] } = {}) {
     ],
   });
 }
-
-module.exports = { FONT, INK, INDIGO, SUN, MUTED, W, run, p, h1, h2, bullet, step, blank, cell, table, box, makeDoc };

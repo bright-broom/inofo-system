@@ -1,11 +1,11 @@
-// IT運用マニュアル（お客様ごとの手順書）テンプレートの生成スクリプト。`node build_manual.js` で docx を再生成する。
+// IT運用マニュアル（お客様ごとの手順書）テンプレートの生成スクリプト。`node build_manual.ts` で docx を再生成する。
 // 業務委託契約書 第11条の「成果物（手順書・台帳）」として、お客様に引き渡す前提の書類。
 // 〔　〕はお客様の環境に合わせて埋める。パスワードなどの認証情報は、この書類には書かない。
-const fs = require("fs");
-const { Packer, Paragraph, PageBreak, BorderStyle } = require("docx");
-const { INDIGO, SUN, MUTED, run, p, h1, h2, bullet, step, blank, table, box, makeDoc } = require("./lib_docx");
+import fs from "node:fs";
+import { Packer, Paragraph, PageBreak, BorderStyle } from "docx";
+import { INDIGO, SUN, MUTED, run, p, h1, h2, bullet, step, blank, table, box, makeDoc } from "./lib_docx.ts";
 
-const { HOURS } = require("./lib_pricing");
+import { HOURS } from "./lib_pricing.ts";
 
 /* ---------------------------------------------------------------- 表紙 */
 const cover = [

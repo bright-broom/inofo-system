@@ -1,15 +1,15 @@
-// サービス説明資料（スライド）の生成スクリプト。`node build_deck.js` で deck/project/slides/*.html を作り直す。
+// サービス説明資料（スライド）の生成スクリプト。`node build_deck.ts` で deck/project/slides/*.html を作り直す。
 // deck/templates/*.html の {{…}} に config/pricing.json の値を差し込む。スライドの文言やデザインはテンプレート側を直す。
 // 生成後、変わったスライドを Artifact（https://claude.ai/artifact/J4tLwpUKXKDt2kuDRHJN59）に公開し直す必要がある。
-const fs = require("fs");
-const path = require("path");
-const { pricing, yen, target, plan } = require("./lib_pricing");
+import fs from "node:fs";
+import path from "node:path";
+import { pricing, yen, target } from "./lib_pricing.ts";
 
-const TEMPLATES = path.join(__dirname, "deck/templates");
-const SLIDES = path.join(__dirname, "deck/project/slides");
+const TEMPLATES = path.join(import.meta.dirname, "deck/templates");
+const SLIDES = path.join(import.meta.dirname, "deck/project/slides");
 
 const { weekday, holiday } = pricing.serviceHours;
-const values = {
+const values: Record<string, string> = {
   capacity: String(pricing.capacity),
   overage: yen(pricing.overage.ratePerHour),
   unit: String(pricing.overage.unitMinutes),

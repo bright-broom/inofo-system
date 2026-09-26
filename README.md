@@ -14,11 +14,11 @@
 │   └── app/              ページ（トップ／プライバシーポリシー／運営者情報／404）
 └── business-docs/        書類の生成スクリプト
     ├── build_all.sh      全書類をまとめて作り直す
-    ├── lib_pricing.js    pricing.json を読む部品（JS）
+    ├── lib_pricing.ts    pricing.json を読む部品（TypeScript）
     ├── pricing.py        pricing.json を読む部品（Python）
-    ├── lib_docx.js       Word の共通デザイン
+    ├── lib_docx.ts       Word の共通デザイン
     ├── snapshot.py       書類の中身が変わっていないかの確認ツール
-    ├── build_deck.js     スライドを作り直す（テンプレートに料金を差し込む）
+    ├── build_deck.ts     スライドを作り直す（テンプレートに料金を差し込む）
     └── deck/
         ├── templates/    スライドのテンプレート（文言・デザインはここを直す）
         └── project/      生成されたスライド（Artifact に公開するもの）
@@ -30,9 +30,9 @@
 2. 書類とスライドを作り直す：`cd business-docs && ./build_all.sh --check`
    - 変わった書類・スライドが「差分」として表示されます。料金が載っていないものに差分が出たら不具合です。
 3. サイトを確認する：`npm run dev`
-4. **スライドを公開し直す**：`build_deck.js` が「Artifact への公開が必要」と表示したスライドを、[サービス説明資料](https://claude.ai/artifact/J4tLwpUKXKDt2kuDRHJN59)に公開し直します（Claude に「更新されたスライドを公開して」と頼めば行えます）。
+4. **スライドを公開し直す**：`build_deck.ts` が「Artifact への公開が必要」と表示したスライドを、[サービス説明資料](https://claude.ai/artifact/J4tLwpUKXKDt2kuDRHJN59)に公開し直します（Claude に「更新されたスライドを公開して」と頼めば行えます）。
 
-スライドの文言やデザインを変えるときは、`deck/project/slides/` ではなく `deck/templates/` を直してください。`deck/project/slides/` は生成物なので、作り直すと上書きされます。料金や時間は `{{standard.price}}` のような差し込み記号で書きます（使える記号は `build_deck.js` の `values` を参照）。
+スライドの文言やデザインを変えるときは、`deck/project/slides/` ではなく `deck/templates/` を直してください。`deck/project/slides/` は生成物なので、作り直すと上書きされます。料金や時間は `{{standard.price}}` のような差し込み記号で書きます（使える記号は `build_deck.ts` の `values` を参照）。
 
 ## サイト
 
@@ -46,27 +46,28 @@ npm run build    # 本番ビルド
 
 ## 書類
 
-初回だけ準備が必要です（Node.js と Python 3 が必要）。
+初回だけ準備が必要です。Node.js 22.18 以上（TypeScript をビルドなしでそのまま実行します）と Python 3 が必要です。
 
 ```bash
 cd business-docs
 npm install
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ./build_all.sh   # out/ に全書類が作られる
+npm run typecheck   # 生成スクリプトの型チェック
 ```
 
 | 段階 | 書類 | 形式 | スクリプト |
 |---|---|---|---|
-| 集客・営業 | サービス説明資料（スライド） | HTML（Artifact） | `build_deck.js` |
-| 集客・営業 | 料金表 | Word | `build_pricelist.js` |
+| 集客・営業 | サービス説明資料（スライド） | HTML（Artifact） | `build_deck.ts` |
+| 集客・営業 | 料金表 | Word | `build_pricelist.ts` |
 | 相談・提案 | ヒアリングシート | Excel | `build_hearing.py` |
-| 相談・提案 | 提案書 | Word | `build_proposal.js` |
+| 相談・提案 | 提案書 | Word | `build_proposal.ts` |
 | 相談・提案 | 見積書・請求書 | Excel | `build_xlsx.py` |
-| 契約 | 業務委託契約書（準委任）・秘密保持契約書 | Word | `build.js` |
+| 契約 | 業務委託契約書（準委任）・秘密保持契約書 | Word | `build_contracts.ts` |
 | 運用開始 | オンボーディングチェックリスト | Excel | `build_onboarding.py` |
-| 運用開始 | IT運用マニュアル | Word | `build_manual.js` |
-| 運用開始 | インシデント対応手順書 | Word | `build_incident.js` |
-| 運用開始 | ITよくある質問（社員向け） | Word | `build_faq.js` |
+| 運用開始 | IT運用マニュアル | Word | `build_manual.ts` |
+| 運用開始 | インシデント対応手順書 | Word | `build_incident.ts` |
+| 運用開始 | ITよくある質問（社員向け） | Word | `build_faq.ts` |
 | 毎月の運用 | 月次作業報告書 | Excel | `build_report.py` |
 | 契約終了 | オフボーディングチェックリスト | Excel | `build_offboarding.py` |
 
