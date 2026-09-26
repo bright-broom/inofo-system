@@ -45,7 +45,7 @@ export default function OgImage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 18 }}>
-          {["3 simple plans", "from JPY 50,000 / mo", "Every day 8:00-21:00"].map((t) => (
+          {["3 simple plans", "from JPY 30,000 / mo", "Evenings & weekends"].map((t) => (
             <div key={t} style={{ display: "flex", background: "#fff", border: "4px solid #111", borderRadius: 999, padding: "12px 28px", fontSize: 30, fontWeight: 700 }}>
               {t}
             </div>

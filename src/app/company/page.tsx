@@ -3,13 +3,13 @@ import { legal, mailto } from "@/content";
 import { SubPage } from "@/components/SubPage";
 
 export const metadata: Metadata = {
-  title: "運営会社",
+  title: "運営者情報",
   alternates: { canonical: "/company" },
 };
 
 export default function CompanyPage() {
   return (
-    <SubPage en="Company" title="運営会社">
+    <SubPage en="About" title="運営者情報">
       <dl className="overflow-hidden rounded-3xl border-[2.5px] border-ink">
         {legal.company.map((row, i) => (
           <div key={row.label} className={`grid gap-1 p-5 md:grid-cols-[10rem_1fr] md:gap-6 ${i ? "border-t border-neutral-200" : ""}`}>

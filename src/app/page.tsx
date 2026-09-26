@@ -1,5 +1,5 @@
 import {
-  brand, siteUrl, siteDescription, hours, problems, plans, compareRows, planNotes, experts, steps, reasons, tips, message, excluded, faqs, sns, mailto,
+  brand, siteUrl, siteDescription, hours, problems, plans, compareRows, planNotes, capacity, skills, steps, reasons, tips, message, excluded, faqs, sns, mailto,
 } from "@/content";
 import { Header } from "@/components/Header";
 import { FixedCta } from "@/components/FixedCta";
@@ -56,12 +56,12 @@ function Hero() {
             <br />
             <span className="bg-white px-2 box-decoration-clone">まるっと支える</span>
             <br />
-            <span className="bg-white px-2 box-decoration-clone">チームです！</span>
+            <span className="bg-white px-2 box-decoration-clone">相棒です！</span>
           </h1>
           <p className="mt-8 max-w-md text-sm leading-loose font-bold md:text-base">
-            プランは3つだけ。月額 5万円から、
+            プランは3つだけ。月額 3万円から。
             <br />
-            毎日 8:00〜21:00、土日も専門チームが対応します。
+            現役ITエンジニアが、担当を変えずに直接サポートします。
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#plans" className="rounded-full bg-ink px-8 py-4 font-bold text-white shadow-[4px_4px_0_#fff] transition hover:-translate-y-0.5 hover:bg-indigo">3つのプランを見る →</a>
@@ -102,7 +102,7 @@ function HeroVisual() {
           ))}
         </div>
         <ul className="mt-4 grid gap-2 text-xs font-bold">
-          {["新入社員3名のPCセットアップ完了", "多要素認証を全社展開", "土曜朝のVPN障害を30分で復旧"].map((t) => (
+          {["新入社員3名のPCセットアップ完了", "多要素認証を全社展開", "共有フォルダの権限を整理"].map((t) => (
             <li key={t} className="flex items-center gap-2 rounded-xl border-2 border-ink/10 px-3 py-2">
               <span className="grid size-5 place-items-center rounded-full bg-ink text-[10px] text-white">✓</span>
               {t}
@@ -162,7 +162,10 @@ function Plans() {
         <SectionTitle en="Plans" light>
           シンプルな<span className="rounded-xl bg-ink px-3 text-sun">3つのプラン</span>
         </SectionTitle>
-        <p className="-mt-6 mb-14 text-center text-sm font-bold">迷ったら、いちばん選ばれている「スタンダード」がおすすめです。</p>
+        <p className="-mt-6 text-center text-sm font-bold">迷ったら、いちばん選ばれている「スタンダード」がおすすめです。</p>
+        <p className="mx-auto mt-4 mb-14 w-fit rounded-full border-2 border-ink bg-white px-4 py-1.5 text-center text-xs font-black">
+          品質を保つため、ご契約は同時に{capacity}社までとしています
+        </p>
 
         <div className="grid items-stretch gap-6 md:grid-cols-3 md:gap-5">
           {plans.map((p, i) => (
@@ -303,9 +306,9 @@ function Team() {
     <section className="bg-soft py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <SectionTitle en="Team">
-          窓口はひとつ、
+          相談する人と、
           <br className="md:hidden" />
-          <span className="marker">対応はチームで</span>
+          <span className="marker">対応する人が同じ</span>
         </SectionTitle>
         <Reveal className="mx-auto grid max-w-4xl items-center gap-6 md:grid-cols-[auto_auto_1fr]">
           <div className="flex flex-col items-center gap-2">
@@ -315,19 +318,19 @@ function Team() {
           <span className="text-center text-2xl font-black md:text-3xl">⇄</span>
           <div className="rounded-3xl border-[2.5px] border-ink bg-white p-5">
             <div className="mb-4 flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-ink px-4 py-1.5 text-sm font-bold text-white">専任窓口</span>
-              <span className="text-sm font-bold">がご依頼を受けて、最適な専門家へ</span>
+              <span className="rounded-full bg-ink px-4 py-1.5 text-sm font-bold text-white">担当エンジニア</span>
+              <span className="text-sm font-bold">が、ご相談から作業まで一貫して対応</span>
             </div>
             <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
-              {experts.map((e) => (
+              {skills.map((e) => (
                 <span key={e} className="grid min-h-16 place-items-center rounded-2xl bg-sun px-1 text-center text-xs leading-tight font-bold">{e}</span>
               ))}
             </div>
-            <p className="mt-3 text-right text-xs font-bold text-neutral-500">{brand.name} エキスパートチーム</p>
+            <p className="mt-3 text-right text-xs font-bold text-neutral-500">対応できる領域</p>
           </div>
         </Reveal>
         <p className="sec-title mt-12 text-center text-xl md:text-2xl">
-          どのプランでも、<span className="marker">必要な専門家が必要なときに。</span>
+          毎回イチから説明する必要は、<span className="marker">もうありません。</span>
         </p>
       </div>
     </section>
@@ -412,11 +415,11 @@ function Message() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 md:grid-cols-[320px_1fr] md:gap-16">
         <Reveal className="md:sticky md:top-28 md:self-start">
           <p className="mb-2 font-display text-xs tracking-[.35em] uppercase">Message</p>
-          <h2 className="sec-title text-3xl">代表あいさつ</h2>
+          <h2 className="sec-title text-3xl">ごあいさつ</h2>
           <div className="mt-8 grid aspect-square w-56 place-items-center rounded-full border-[3px] border-ink bg-white md:w-full">
             <Mascot className="w-1/2" />
           </div>
-          <p className="mt-6 text-sm font-bold">{brand.company}</p>
+          <p className="mt-6 text-sm font-bold">{brand.name}</p>
           <p className="text-sm">{message.role}</p>
           <p className="mt-1 text-2xl font-black">{message.name}</p>
           <p className="font-display text-xs tracking-widest text-neutral-600">{message.roman}</p>
@@ -462,10 +465,13 @@ function Faq() {
 function Terms() {
   return (
     <section className="pb-20 md:pb-28">
-      <div className="mx-auto grid max-w-4xl gap-6 px-4 md:grid-cols-[auto_1fr]">
+      <div className="mx-auto grid max-w-4xl gap-6 px-4 md:grid-cols-[minmax(0,18rem)_1fr]">
         <Reveal className="rounded-3xl border-[2.5px] border-ink p-6 md:p-8">
           <p className="text-sm font-black">対応時間</p>
-          <p className="mt-2 font-display text-3xl whitespace-nowrap">{hours.label}</p>
+          <p className="mt-2 grid font-display text-lg leading-relaxed [&>span]:whitespace-nowrap">
+            <span>平日 19:00〜22:00</span>
+            <span>土日祝 10:00〜18:00</span>
+          </p>
           <p className="mt-2 text-sm text-neutral-600">{hours.note}</p>
         </Reveal>
         <Reveal className="rounded-3xl bg-soft p-6 md:p-8">
@@ -534,7 +540,7 @@ function Contact() {
               ))}
             </ul>
           </div>
-          <p className="mt-5 text-xs text-neutral-600">受付：{hours.label}（土日祝も対応）／ 原則24時間以内にご返信します</p>
+          <p className="mt-5 text-xs text-neutral-600">メールは24時間受付／対応時間：{hours.label}</p>
         </div>
       </div>
     </section>
@@ -552,8 +558,7 @@ function JsonLd() {
         name: brand.company,
         url: siteUrl,
         email: brand.email,
-        telephone: brand.tel,
-        address: { "@type": "PostalAddress", addressCountry: "JP", streetAddress: `${brand.zip} ${brand.address}` },
+        address: { "@type": "PostalAddress", addressCountry: "JP", addressRegion: brand.area },
       },
       {
         "@type": "Service",
@@ -561,12 +566,15 @@ function JsonLd() {
         description: siteDescription,
         provider: { "@id": `${siteUrl}/#org` },
         areaServed: "JP",
-        hoursAvailable: {
-          "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-          opens: "08:00",
-          closes: "21:00",
-        },
+        hoursAvailable: [
+          {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            opens: "19:00",
+            closes: "22:00",
+          },
+          { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday", "Sunday"], opens: "10:00", closes: "18:00" },
+        ],
         offers: plans.map((p) => ({
           "@type": "Offer",
           name: `${p.name}プラン`,

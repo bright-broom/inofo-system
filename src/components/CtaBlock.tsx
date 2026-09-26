@@ -19,7 +19,7 @@ export function CtaBlock() {
               <br className="hidden md:block" />
               「まだ検討段階」でも大歓迎です。
             </p>
-            <p className="mt-5 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-bold">受付：{hours.label}（土日祝も対応）</p>
+            <p className="mt-5 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-bold">対応時間：{hours.label}</p>
           </div>
           <div className="flex flex-col items-center gap-3">
             <Mascot className="w-20 md:w-24" />
