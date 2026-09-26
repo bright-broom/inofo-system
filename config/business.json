@@ -1,4 +1,5 @@
 {
-  "_readme": "事業者の連絡先の唯一の定義。サイト（src/content.ts）・スライド（business-docs/deck）・見積書/請求書（business-docs/build_xlsx.py）がここを読む。",
-  "email": "leonardodavinci.works@gmail.com"
+  "_readme": "事業者の連絡先・運営者名の唯一の定義。サイト（src/content.ts）・スライド（business-docs/deck）・見積書/請求書（business-docs/build_xlsx.py）がここを読む。",
+  "email": "leonardodavinci.works@gmail.com",
+  "operator": "BrightBroom"
 }
