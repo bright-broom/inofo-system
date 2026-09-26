@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sun: #ffed69;
+  --color-sun-deep: #ffe735;
+  --color-ink: #111111;
+  --color-soft: #f4f4f1;
+  --color-indigo: #3d38e0;
+  --color-alert: #e53630;
+  --font-sans: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", sans-serif;
+  --font-display: "Dela Gothic One", "Zen Maru Gothic", sans-serif;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body { background: #fff; color: var(--color-ink); -webkit-font-smoothing: antialiased; }
+
+/* ハーフトーン装飾 */
+.dots { background-image: radial-gradient(var(--color-ink) 1.4px, transparent 1.6px); background-size: 8px 8px; }
+.dots-grid { background-image: radial-gradient(#d7d7d2 1.2px, transparent 1.4px); background-size: 22px 22px; }
+
+/* マーカー下線 */
+.marker { background: linear-gradient(transparent 62%, var(--color-sun) 62%); padding: 0 .1em; }
+
+/* 見出し直下の短い線 */
+.sec-title { font-family: var(--font-display); letter-spacing: .02em; line-height: 1.35; }
+
+/* スクロール表示 */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal.is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+@keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+.bob { animation: bob 3.2s ease-in-out infinite; }
+
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] .faq-icon { transform: rotate(45deg); }
