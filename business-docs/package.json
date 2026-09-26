@@ -4,16 +4,22 @@
   "scripts": {
     "build": "./build_all.sh",
     "check": "./build_all.sh --check",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "deck": "node --import tsx build_deck.tsx"
   },
   "type": "module",
   "dependencies": {
     "docx": "^9.7.2",
-    "mammoth": "^1.12.3"
+    "mammoth": "^1.12.3",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "private": true,
   "devDependencies": {
     "@types/node": "^22.20.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   }
 }

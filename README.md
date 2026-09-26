@@ -18,10 +18,12 @@
     ├── pricing.py        pricing.json を読む部品（Python）
     ├── lib_docx.ts       Word の共通デザイン
     ├── snapshot.py       書類の中身が変わっていないかの確認ツール
-    ├── build_deck.ts     スライドを作り直す（テンプレートに料金を差し込む）
+    ├── build_deck.tsx    スライドを HTML に書き出す（React の renderToStaticMarkup）
     └── deck/
-        ├── templates/    スライドのテンプレート（文言・デザインはここを直す）
-        └── project/      生成されたスライド（Artifact に公開するもの）
+        ├── slides/       スライド13枚（React コンポーネント。文言はここを直す）
+        ├── components.tsx スライドの部品（見出し・カード・プランカード・フッターなど）
+        ├── theme.ts      色・書体・共通スタイル
+        └── project/      deck.json（並び順）と、生成されたスライド（git には入れない）
 ```
 
 ## 料金や対応時間を変えるとき
@@ -30,9 +32,9 @@
 2. 書類とスライドを作り直す：`cd business-docs && ./build_all.sh --check`
    - 変わった書類・スライドが「差分」として表示されます。料金が載っていないものに差分が出たら不具合です。
 3. サイトを確認する：`npm run dev`
-4. **スライドを公開し直す**：`build_deck.ts` が「Artifact への公開が必要」と表示したスライドを、[サービス説明資料](https://claude.ai/artifact/J4tLwpUKXKDt2kuDRHJN59)に公開し直します（Claude に「更新されたスライドを公開して」と頼めば行えます）。
+4. **スライドを公開し直す**：`build_deck.tsx` が「Artifact への公開が必要」と表示したスライドを、[サービス説明資料](https://claude.ai/artifact/J4tLwpUKXKDt2kuDRHJN59)に公開し直します（Claude に「更新されたスライドを公開して」と頼めば行えます）。
 
-スライドの文言やデザインを変えるときは、`deck/project/slides/` ではなく `deck/templates/` を直してください。`deck/project/slides/` は生成物なので、作り直すと上書きされます。料金や時間は `{{standard.price}}` のような差し込み記号で書きます（使える記号は `build_deck.ts` の `values` を参照）。
+スライドは React コンポーネント（`deck/slides/*.tsx`）で書いています。文言は各スライドのファイル、見た目の共通部分は `deck/components.tsx` と `deck/theme.ts` を直してください。料金や時間はコンポーネントの中で `pricing.json` のデータから組み立てるので、スライド側に数字を書く必要はありません。スライドの並び順は `deck/project/deck.json` の `order` です。
 
 ## サイト
 
@@ -53,12 +55,13 @@ cd business-docs
 npm install
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ./build_all.sh   # out/ に全書類が作られる
+npm run deck        # スライドだけ作り直す
 npm run typecheck   # 生成スクリプトの型チェック
 ```
 
 | 段階 | 書類 | 形式 | スクリプト |
 |---|---|---|---|
-| 集客・営業 | サービス説明資料（スライド） | HTML（Artifact） | `build_deck.ts` |
+| 集客・営業 | サービス説明資料（スライド） | React → HTML（Artifact） | `build_deck.tsx` |
 | 集客・営業 | 料金表 | Word | `build_pricelist.ts` |
 | 相談・提案 | ヒアリングシート | Excel | `build_hearing.py` |
 | 相談・提案 | 提案書 | Word | `build_proposal.ts` |
