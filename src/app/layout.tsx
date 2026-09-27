@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { brand, siteUrl, siteDescription } from "@/content";
+import { brand, minPriceMan, siteUrl, siteDescription } from "@/content";
 import "./globals.css";
 
-const title = `${brand.name}｜中小企業の情シス業務をまるごと支援`;
+// 検索される言葉（ひとり情シス・外注・ITサポート）を前に、屋号を後ろに置く
+const title = `ひとり情シスの外注・ITサポート｜月額${minPriceMan}万円〜｜${brand.name}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title, description: siteDescription },
   formatDetection: { telephone: false, email: false, address: false },
+  // Google Search Console の所有権確認（HTMLタグ方式）。値は環境変数で渡す
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : undefined,
 };
 
 export const viewport: Viewport = { themeColor: "#ffed69" };

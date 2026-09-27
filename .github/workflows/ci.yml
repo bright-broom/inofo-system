@@ -30,6 +30,8 @@ jobs:
         run: npm run typecheck
       - name: 本番ビルド
         run: npm run build
+      - name: SEO チェック（タイトル・説明文・canonical・構造化データ・内部リンク・サイトマップ）
+        run: npm run seo:check
 
   docs:
     name: 書類・スライド（型・生成・健全性）

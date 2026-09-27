@@ -15,6 +15,9 @@ export function Footer() {
           <p className="text-xs opacity-60">MAIL {brand.email}</p>
         </div>
         <nav aria-label="フッター" className="flex flex-wrap gap-x-6 gap-y-2 text-xs opacity-80">
+          <Link href="/services" className="hover:underline">サービス</Link>
+          <Link href="/pricing" className="hover:underline">料金プラン</Link>
+          <Link href="/faq" className="hover:underline">よくある質問</Link>
           <Link href="/privacy" className="hover:underline">プライバシーポリシー</Link>
           <Link href="/company" className="hover:underline">運営者情報</Link>
           <Link href="/#contact" className="hover:underline">お問い合わせ</Link>
