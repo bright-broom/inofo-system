@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { brand, legal } from "@/content";
 import { SubPage } from "@/components/SubPage";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd, graph, organizationLd } from "@/seo";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
+  description: "情シス代行・ITサポート「ラクシス」のプライバシーポリシーです。取得する個人情報、利用目的、第三者提供、安全管理措置、開示などの請求方法について定めています。",
   alternates: { canonical: "/privacy" },
 };
 
@@ -62,7 +65,8 @@ const sections: { h: string; body: React.ReactNode }[] = [
 
 export default function PrivacyPage() {
   return (
-    <SubPage en="Privacy Policy" title="プライバシーポリシー">
+    <SubPage en="Privacy Policy" title="プライバシーポリシー" breadcrumbs={[{ name: "プライバシーポリシー", path: "/privacy" }]}>
+      <JsonLd data={graph(organizationLd(), breadcrumbLd([{ name: "プライバシーポリシー", path: "/privacy" }]))} />
       <p className="leading-loose">
         {brand.name}（運営者：{brand.operator}、以下「当方」）は、お客様の個人情報を適切に取り扱うことを社会的責務と考え、以下の方針に基づき個人情報を保護します。
       </p>

@@ -30,9 +30,10 @@ IT担当が「ひとり」または「いない」中小企業向けの、月額
 9. [設計判断の記録](#設計判断の記録)
 10. [品質・セキュリティ・アクセシビリティ](#品質セキュリティアクセシビリティ)
 11. [ディレクトリ構成](#ディレクトリ構成)
-12. [セットアップと日々の操作](#セットアップと日々の操作)
-13. [CI とリリース](#ci-とリリース)
-14. [既知の制約と今後](#既知の制約と今後)
+12. [SEO](#seo)
+13. [セットアップと日々の操作](#セットアップと日々の操作)
+14. [CI とリリース](#ci-とリリース)
+15. [既知の制約と今後](#既知の制約と今後)
 
 ---
 
@@ -196,6 +197,10 @@ flowchart TB
     subgraph APP["src/app（App Router・すべて静的生成）"]
         L["layout.tsx<br/>メタデータ・OGP・スキップリンク"]
         L --> HOME["page.tsx<br/>トップ（LP）"]
+        L --> SV["services/page.tsx<br/>サービス一覧"]
+        SV --> SVD["services/[slug]/page.tsx<br/>サービス6ページ（静的生成）"]
+        L --> PR2["pricing/page.tsx<br/>料金プラン"]
+        L --> FQ["faq/page.tsx<br/>よくある質問"]
         L --> PRIV["privacy/page.tsx"]
         L --> COMP["company/page.tsx"]
         L --> NF["not-found.tsx（noindex）"]
@@ -380,11 +385,36 @@ mindmap
       動きを減らす設定に対応
 ```
 
-- **構造化データ（JSON-LD）**：会社、サービス（3プランの価格と営業時間）、FAQ を検索エンジンに伝えます。値はすべて `pricing.json` から入ります。
+- **構造化データ（JSON-LD）**：事業者（ProfessionalService：価格帯・対応時間・対応地域）、WebSite、料金プラン（OfferCatalog）、サービスごとの Service、FAQPage、パンくず（BreadcrumbList）を出力します。値はすべて `pricing.json`・`src/services.ts` から入ります。
 - **OGP画像**：`next/og` でビルド時に生成します。
 - **404ページ**：専用のタイトルを付け、検索結果に載らないようにしています。
 
 ---
+
+## SEO
+
+「屋号で検索されるのを待つ」のではなく、**お客様が実際に検索する言葉で見つけてもらう**ことを前提に作っています。
+
+| 施策 | 内容 |
+|---|---|
+| 検索語ごとの受け皿ページ | 「ヘルプデスク 代行」「Microsoft 365 運用 代行」などの検索に対応するサービスページ6つ（`src/services.ts`）、料金、よくある質問 |
+| タイトルと説明文 | ページごとに、検索される言葉を前に、屋号を後ろに置く。説明文もページごとに固有 |
+| 内部リンク | トップの「対応できる領域」→ 各サービス、サービス ⇄ 料金 ⇄ FAQ、サービスどうし、パンくずリスト |
+| 構造化データ | 事業者・サービス・料金・FAQ・パンくずを JSON-LD で出力 |
+| 中身の正確さ | 実績の数字や口コミのような、事実でないことは書かない。料金や条件は契約書と同じ定義から出す |
+| Search Console | 環境変数 `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` に確認コードを入れると、所有権確認のタグが出る |
+
+### SEO の自動チェック（`npm run seo:check`）
+
+ビルド結果の HTML をそのまま検査し、CI で PR ごとに実行します。
+
+- 全ページの title と meta description が存在し、重複していない（説明文は50〜160文字）
+- canonical が自分自身のページを指している
+- h1 がちょうど1つ
+- 構造化データが JSON として読める
+- 内部リンクが切れていない
+- サイトマップに全ページが載っていて、存在しないページが載っていない
+- 404ページに noindex が付いている
 
 ## ディレクトリ構成
 
@@ -395,10 +425,13 @@ mindmap
 │   ├── pricing.json            料金・時間・条件の唯一の定義
 │   └── validate-pricing.mts    pricing.json の入力チェック
 ├── scripts/
-│   └── release-check.mts       公開前チェック（仮の値の検出）
+│   ├── release-check.mts       公開前チェック（仮の値の検出）
+│   └── seo-check.mts           SEO チェック（ビルド結果の HTML を検査）
 ├── src/                        Webサイト（Next.js App Router）
 │   ├── content.ts              サイトの全文言とデータ（数値は pricing.json から）
-│   ├── app/                    ページ・OGP画像・sitemap・robots
+│   ├── app/                    ページ（トップ・サービス・料金・FAQ ほか）・OGP画像・sitemap・robots
+│   ├── services.ts             サービスページ6つの内容
+│   ├── seo.ts                  構造化データ（JSON-LD）の組み立て
 │   └── components/             ヘッダー・固定CTA・表示アニメーション など
 └── business-docs/              書類・スライドの生成
     ├── build_all.sh            全出力の生成と回帰チェック（--check）
@@ -437,6 +470,7 @@ npm run build    # 本番ビルド
 npm run typecheck          # 型チェック
 npm run validate:pricing   # pricing.json の入力チェック
 npm run release:check      # 公開前チェック（仮の値が残っていれば一覧を出して失敗）
+npm run seo:check          # SEO チェック（npm run build の後に実行）
 ```
 
 公開前に、`src/content.ts` の仮の値（メールアドレス・運営者名）と、環境変数 `NEXT_PUBLIC_SITE_URL`（本番URL）を設定してください。
@@ -484,7 +518,7 @@ flowchart LR
     PR["PR / main への push"] --> SITE & DOCS
     subgraph SITE["site ジョブ"]
         direction TB
-        S1["npm ci"] --> S2["pricing.json の入力チェック"] --> S3["型チェック"] --> S4["本番ビルド"]
+        S1["npm ci"] --> S2["pricing.json の入力チェック"] --> S3["型チェック"] --> S4["本番ビルド"] --> S5["SEO チェック"]
     end
     subgraph DOCS["docs ジョブ"]
         direction TB
@@ -511,6 +545,7 @@ CI の中には「変更前」の生成物がないため、前後比較（`--ch
 
 | 項目 | 現状 | 次の一手 |
 |---|---|---|
+| 表示速度（フォント） | Google Fonts を `<link>` で読み込んでいる | `next/font` で自前配信に切り替え、表示速度（Core Web Vitals）を改善する |
 | Content-Security-Policy | 未設定（他のセキュリティヘッダーは設定済み） | Next.js が差し込むインラインスクリプトに合わせた CSP を、本番環境で表示を確かめながら追加 |
 | スライドの公開 | 生成後、変わったスライドを手で Artifact に公開する | 公開までを自動化 |
 | 書類生成の言語 | Word とスライドは TypeScript、Excel は Python（数式の再計算による検証に Python の `formulas` を使っているため） | Excel 生成も TypeScript に寄せ、ツールチェーンを1つにする |

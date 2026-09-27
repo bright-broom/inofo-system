@@ -13,7 +13,7 @@ const target = ([min, max]: (number | null)[]) => `従業員 ${min ?? ""}〜${ma
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com").replace(/\/$/, "");
 
 export const siteDescription =
-  `IT担当者が兼務・不在の小さな会社向け情シスサポート。月額${minPrice / 10000}万円からの3プランで、現役ITエンジニアが担当を変えずに直接サポートします。`;
+  `IT担当が兼務・不在の中小企業向けの情シス代行・ITヘルプデスク。PCセットアップ、Microsoft 365 の運用、セキュリティ対策まで、現役ITエンジニアが月額${minPrice / 10000}万円から担当を変えずに直接サポートします。`;
 
 export const brand = {
   name: "ラクシス",
@@ -35,10 +35,10 @@ export const hours = {
 
 export const nav = [
   { href: "/#problem", label: "よくある悩み" },
-  { href: "/#plans", label: "プラン" },
+  { href: "/services", label: "サービス" },
+  { href: "/pricing", label: "料金" },
   { href: "/#reason", label: "選ばれる理由" },
-  { href: "/#flow", label: "導入の流れ" },
-  { href: "/#faq", label: "FAQ" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 export const problems = [
@@ -136,7 +136,15 @@ export const capacity = pricing.capacity;
 export const minPriceMan = minPrice / 10000;
 export const serviceHours = pricing.serviceHours;
 
-export const skills = ["PCセットアップ", "ヘルプデスク", "クラウド運用", "ネットワーク", "セキュリティ", "業務自動化"];
+// 対応できる領域（各サービスページへのリンク）
+export const skills = [
+  { label: "PCセットアップ", slug: "pc-setup" },
+  { label: "ヘルプデスク", slug: "helpdesk" },
+  { label: "クラウド運用", slug: "microsoft-365" },
+  { label: "ネットワーク", slug: "network" },
+  { label: "セキュリティ", slug: "security" },
+  { label: "業務自動化", slug: "automation" },
+];
 
 export const steps = [
   {
