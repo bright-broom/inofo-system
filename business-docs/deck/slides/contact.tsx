@@ -8,7 +8,7 @@ export default function Contact() {
       id="contact"
       transition="fade"
       style={{ background: C.sun, color: C.ink, fontFamily: BODY_FONT, padding: "128px", display: "flex", flexDirection: "column", justifyContent: "center", gap: "40px" }}
-      notes="メールアドレスと運営者名は本番用に差し替える。"
+      notes="問い合わせはメールのみで受け付けている（フォームはない）。まだ検討段階の会社にも、気軽に連絡してもらうよう伝える。"
     >
       <Eyebrow>CONTACT</Eyebrow>
       <h2 style={{ ...head, fontSize: "80px", lineHeight: 1.3 }}>
